@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:700,800&amp;display=swap">
+    <link rel="stylesheet" type="text/css" href="{% static 'vote/css/fontawesome.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'vote/css/solid.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'vote/css/main.css' %}">
+    <body>
+        <header>
+            <div class="container flex align-center">
+                <a href="{% url "vote" %}" id="logo-link"><img class="nav-logo" src="{% static 'vote/images/logo.svg' %}" alt="Godot Engine" height="48"></a>
+                <nav class="nav">
+                {% block nav %}
+                    {% include "includes/navbar.html" %}
+                {% endblock %}
+                </nav>
+                <span class="username">{{ user }}</span>
+                <a href="{% url "logout" %}" id="logout-link"><i class="fas fa-sign-out-alt"></i></a>
+            </div>
+        </header>
+        <div class="head">
+            <div class="container flex eqsize responsive">
+                <div class="main">
+                    <h1 class="intro-title">{% block title %}Title{% endblock %}</h1>
+                    <p class="small">{% block intro-paragraph %}{% endblock %}</p>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="content">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+    </body>
+</html>

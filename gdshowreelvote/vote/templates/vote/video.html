@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if video %}
+        <h1>{{ video.video_link }}</h1>
+    {% else %}
+        <p>No more videos to rate.</p>
+    {% endif %}
+{% endblock %}

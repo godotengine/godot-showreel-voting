@@ -1,0 +1,11 @@
+{% extends 'registration/base_login.html' %}
+
+{% load static %}
+
+{% block content %}
+    <div class="login_wrapper">
+        <img src="{% static 'vote/images/Godot_logo.svg' %}" alt="Godot Engine" width="300px">
+        <h2>Showreel videos rating</h2>
+        {% include "includes/login_button.html" %}
+    </div>
+{% endblock %}

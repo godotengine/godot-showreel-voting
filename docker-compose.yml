@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  database:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      - MYSQL_DATABASE=gdshowreel
+      - MYSQL_USER=mysql
+      - MYSQL_PASSWORD_FILE=/run/secrets/gdshowreel_django_db_password
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/gdshowreel_django_db_root_password
+    secrets:
+      - gdshowreel_django_db_root_password
+      - gdshowreel_django_db_password
+    expose:
+      - "3306"
+    volumes:
+      - ./pgdata/data:/var/lib/postgresql/data # WARNING: in production, change to real database storage dir
+
+  web:
+    build: gdshowreelvote
+    environment:
+      - DJANGO_DEBUG=True # WARNING: in production, set to false
+      - DJANGO_ALLOWED_HOSTS=* # WARNING: in production, set the real domain name
+    expose:
+      - "8000"
+    depends_on:
+      - database
+    volumes:
+      - statics:/var/www/showreel.godotengine.org/static/
+    secrets:
+      - gdshowreel_django_db_password
+      - gdshowreel_django_secret
+      - gdshowreel_social_auth_github_secret
+
+  nginx:
+    build: nginx
+    volumes:
+      - statics:/var/www/showreel.godotengine.org/static/
+      - ./certificates:/etc/nginx/ssl/ # WARNING: in production, change to real certificates storage dir
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+        - web
+
+secrets:
+  gdshowreel_django_db_root_password:
+    file: ./secrets/gdshowreel_django_db_root_password.txt
+  gdshowreel_django_db_password:
+    file: ./secrets/gdshowreel_django_db_password.txt
+  gdshowreel_django_secret:
+    file: ./secrets/gdshowreel_django_secret.txt
+  gdshowreel_social_auth_github_secret:
+    file: ./secrets/gdshowreel_social_auth_github_secret.txt
+
+volumes:
+  statics:
