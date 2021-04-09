@@ -35,5 +35,5 @@ class SubmissionForm(ModelForm):
         cleaned_data = super().clean()
         showreel = cleaned_data.get("showreel")
 
-        if len(Video.objects.filter(showreel=showreel, author=self.user)) >= settings.VOTE_MAX_SUBMISSIONS_PER_SHOWREEL:
+        if (not self.user.is_staff) and len(Video.objects.filter(showreel=showreel, author=self.user)) >= settings.VOTE_MAX_SUBMISSIONS_PER_SHOWREEL:
             self.add_error('showreel', ValidationError(f"You already have {settings.VOTE_MAX_SUBMISSIONS_PER_SHOWREEL} submissions on this showreel, no more submissions are allowed. Please avoid submitting the same game several times."))
