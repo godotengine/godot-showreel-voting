@@ -1,6 +1,6 @@
 from urllib.parse import urlparse, parse_qs
 
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.views.generic.list import ListView
@@ -18,7 +18,7 @@ from .forms import *
 import csv
 
 # Display a random video to be rated
-class VoteView(LoginRequiredMixin, CreateView):
+class VoteView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Vote
     fields = ["rating"]
     success_url = reverse_lazy('vote')
@@ -73,6 +73,12 @@ class VoteView(LoginRequiredMixin, CreateView):
 
         return context
 
+    def test_func(self):
+        return (not settings.VOTE_ONLY_STAFF_CAN_VOTE) or self.request.user.is_staff
+
+    def handle_no_permission(self):
+        return redirect('submissions')
+
 # Delete the last vote done
 class LastVoteDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     http_method_names = ['post', 'delete']
@@ -80,10 +86,16 @@ class LastVoteDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def get_object(self, queryset=None):
         # Get last vote to delete it
-        return  Vote.objects.filter(user=self.request.user, video__showreel__status=Showreel.VOTE).order_by('created_at').last()
+        return Vote.objects.filter(user=self.request.user, video__showreel__status=Showreel.VOTE).order_by('created_at').last()
 
     def test_func(self):
-        return Vote.objects.filter(user=self.request.user, video__showreel__status=Showreel.VOTE).exists()
+        if (not settings.VOTE_ONLY_STAFF_CAN_VOTE) or self.request.user.is_staff:
+            return Vote.objects.filter(user=self.request.user, video__showreel__status=Showreel.VOTE).exists()
+        else:
+            return False
+
+    def handle_no_permission(self):
+        return redirect('submissions')
 
 # Display the list of a user's submissions
 class UserVideoListView(LoginRequiredMixin, ListView):

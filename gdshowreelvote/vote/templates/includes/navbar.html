@@ -1,5 +1,5 @@
 <ul>
-    <li class="{% if active == "vote" %}active{% endif %}"><a href="{% url 'vote' %}">Vote</a></li>
+    {% if can_vote %}<li class="{% if active == "vote" %}active{% endif %}"><a href="{% url 'vote' %}">Vote</a></li>{% endif %}
     <li class="{% if active == "submissions" %}active{% endif %}"><a href="{% url 'submissions' %}">My submissions</a></li>
     <li class="{% if active == "about" %}active{% endif %}"><a href="{% url 'about' %}">About</a></li>
     {% if user.is_staff %}<li><a href="{% url 'admin:index' %}">Admin</a></li>{% endif %}
