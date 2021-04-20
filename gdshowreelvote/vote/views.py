@@ -10,9 +10,8 @@ from django.views.generic.base import TemplateView
 from django.views import View
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
-from django.contrib.auth.models import User
 
-from .models import Video, Vote, Showreel
+from .models import Video, Vote, Showreel, User
 from .forms import *
 
 import csv

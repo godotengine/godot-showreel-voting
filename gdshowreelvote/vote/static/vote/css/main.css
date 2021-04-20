@@ -178,6 +178,16 @@ button:hover {
 
 */
 
+.messages {
+  display: block;
+  color: #f57389;
+  background-color: var(--base-color);
+  padding: 10px;
+  list-style-type: none;
+  text-align: center;
+  margin: 0;
+}
+
 header {
     width: 100vw;
     height: 64px;
@@ -207,6 +217,15 @@ header .container {
     height: 20px;
     margin-right: 20px;
     margin-left: 10px;
+}
+
+#logout-link .fabutton {
+  height: 20px;
+  color: var(--dark-color);
+  font-size: 16px;
+  background: none;
+  padding: 0px;
+  border: none;
 }
 
 #navhead {

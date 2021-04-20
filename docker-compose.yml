@@ -17,6 +17,15 @@ services:
     volumes:
       - ./pgdata/data:/var/lib/postgresql/data # WARNING: in production, change to real database storage dir
 
+  # WARNING: this keycloak configuration is not ready for production.
+  keycloak:
+    image: quay.io/keycloak/keycloak:12.0.4
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+    ports:
+      - "8080:8080"
+
   web:
     build: gdshowreelvote
     environment:
@@ -26,12 +35,14 @@ services:
       - "8000"
     depends_on:
       - database
+      - keycloak
     volumes:
       - statics:/var/www/showreel.godotengine.org/static/
     secrets:
       - gdshowreel_django_db_password
       - gdshowreel_django_secret
-      - gdshowreel_social_auth_github_secret
+      - gdshowreel_oidc_rp_client_id
+      - gdshowreel_oidc_rp_client_secret
 
   nginx:
     build: nginx
@@ -51,8 +62,10 @@ secrets:
     file: ./secrets/gdshowreel_django_db_password.txt
   gdshowreel_django_secret:
     file: ./secrets/gdshowreel_django_secret.txt
-  gdshowreel_social_auth_github_secret:
-    file: ./secrets/gdshowreel_social_auth_github_secret.txt
+  gdshowreel_oidc_rp_client_id:
+    file: ./secrets/gdshowreel_oidc_rp_client_id.txt
+  gdshowreel_oidc_rp_client_secret:
+    file: ./secrets/gdshowreel_oidc_rp_client_secret.txt
 
 volumes:
   statics:

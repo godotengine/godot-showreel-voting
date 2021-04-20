@@ -2,7 +2,6 @@ from django.conf import settings
 
 from .models import Showreel
 
-
 def common(request):
     has_open_showreels = Showreel.objects.filter(status=Showreel.OPENED_TO_SUBMISSIONS).exists()
     has_voting_showreels = Showreel.objects.filter(status=Showreel.VOTE).exists()

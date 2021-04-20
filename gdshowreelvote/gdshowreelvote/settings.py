@@ -34,14 +34,14 @@ ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS','').split(',')
 INSTALLED_APPS = [
     'vote.apps.VoteConfig',
 
-    'social_django',
-
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'mozilla_django_oidc',
 ]
 
 MIDDLEWARE = [
@@ -53,7 +53,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    'social_django.middleware.SocialAuthExceptionMiddleware',
+    'mozilla_django_oidc.middleware.SessionRefresh',
 ]
 
 ROOT_URLCONF = 'gdshowreelvote.urls'
@@ -69,9 +69,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-
-                'social_django.context_processors.backends',
-                'social_django.context_processors.login_redirect',
 
                 'vote.context_processors.common',
             ],
@@ -95,7 +92,6 @@ DATABASES = {
         'PORT': '',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -136,26 +132,53 @@ USE_TZ = True
 STATIC_ROOT = os.environ.get('DJANGO_STATIC_ROOT', "/var/www/showreel.godotengine.org/static/")
 STATIC_URL = '/static/' 
 
-# Authentication
-
+### Authentication ###
 AUTHENTICATION_BACKENDS = [
-    'social_core.backends.github.GithubOAuth2',
+    'vote.auth.OIDCAuthenticationBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-SOCIAL_AUTH_GITHUB_KEY = '9d6cbdc261647c5e46e2'
-SOCIAL_AUTH_GITHUB_SECRET = get_docker_secret('gdshowreel_social_auth_github_secret')
+AUTH_USER_MODEL = 'vote.User'
 
-LOGIN_REDIRECT_URL = 'vote'
+# OICD client connection
+OIDC_RP_CLIENT_ID = get_docker_secret('gdshowreel_oidc_rp_client_id')
+OIDC_RP_CLIENT_SECRET = get_docker_secret('gdshowreel_oidc_rp_client_secret')
+print(OIDC_RP_CLIENT_SECRET)
+
+# Signing algorihtm
+OIDC_RP_SIGN_ALGO = 'RS256'
+
+# Keycloak configuration
+KEYCLOAK_REALM = "master"
+KEYCLOAK_HOSTNAME = "keycloak:8080"
+
+# Keycloak roles in authentication claims
+KEYCLOAK_ROLES_PATH_IN_CLAIMS = ["realm_access", "roles"]
+KEYCLOAK_STAFF_ROLE = "staff"
+KEYCLOAK_SUPERUSER_ROLE = "admin"
+
+# Keycloak OICD endpoints. You can get those at this endpoint http://{keycloakhost}:{port}/auth/realms/{realm}/.well-known/openid-configuration
+OIDC_OP_AUTHORIZATION_ENDPOINT = f"http://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/auth" # URL of the OIDC OP authorization endpoint
+OIDC_OP_TOKEN_ENDPOINT = f"http://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/token" # URL of the OIDC OP token endpoint
+OIDC_OP_USER_ENDPOINT = f"http://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/userinfo" # URL of the OIDC OP userinfo endpoint
+OIDC_OP_JWKS_ENDPOINT = f"http://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/certs"
+OIDC_OP_LOGOUT_ENDPOINT = f"http://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/logout"
+
+# URLS
+LOGIN_REDIRECT_URL = '/submissions'
+LOGOUT_REDIRECT_URL = '/login'
 
 LOGIN_URL = 'login'
 
-# Security
+# Automatic Keycloak logout
+OIDC_OP_LOGOUT_URL_METHOD = "vote.auth.logout"
+
+### Security ###
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-#Custom settings
+### Custom settings ###
 VOTE_MAX_SUBMISSIONS_PER_SHOWREEL = 3
 VOTE_ONLY_STAFF_CAN_VOTE = True

@@ -4,7 +4,7 @@ This repository hosts the Godot showreel website. It is a video submission and
 voting platform meant to help contributors selecting the best videos to
 showcase Godot engine.
 
-It uses Github as the authentication provider.
+It uses Keycloak as the authentication provider.
 
 ## Web application setup
 
@@ -20,7 +20,18 @@ ngingx and a postgres database. The use of docker-compose should simplify the
 processus a lot but setting up everything in a real production environment
 might be more complex.
 
-### Running into testing envronment
+### Keycloak setup
+
+To setup your keycloak instance you will have at least to:
+- Connect to you keycloak instance (the default credential for the local
+  keycloak instance are admin/admin).
+- Create a new client.
+- Setup the client access type as "confidential".
+- Get the secret in the Crendetials section, it's needed in the web app
+  configuration.
+- In the Mappers section, create a built-in mapper for "realm roles".
+
+### Running into testing environment
 
 The default configuration is the one used for testing, so you don't have to
 modify it. However you will need to:
@@ -30,12 +41,13 @@ modify it. However you will need to:
  environment, you should probably use a self-signed certificate,
 - Create four files in the `./secrets` folder, named
   `gdshowreel_django_db_root_password.txt`,
-  `gdshowreel_django_db_password.txt`, `gdshowreel_django_secret.txt` and
-  `gdshowreel_social_auth_github_secret.txt`.  The first two should contains
-  random passwords, they are used to, respectively, setupm the mysql root
-  password, communicate between django and the database, and as the internal
-  django secret. The last one should contain an oauth token provided by Github
-  (see their documentation).
+  `gdshowreel_django_db_password.txt`, `gdshowreel_django_secret.txt`,
+  `gdshowreel_oidc_rp_client_id.txt` and
+  `gdshowreel_oidc_rp_client_secret.txt`. The first threee should contains
+  random passwords, they are used to, respectively, setup the mysql root
+  password, communicate between django and the database, and the internal
+  django secret. The last two ones are should be provided by the keycloak
+  instance.
 
 By default, the `./pgdata` will contain the database data.
 
@@ -45,10 +57,11 @@ app using: `docker-compose build; docker-compose up nginx`
 Note that, the first time you run the application, you might need to setup the
 django database by running: `docker-compose run web ./manage.py migrate`. Any
 change to django models might also require running `docker-compose run web
-./manage.py makemigratios` first. But that's in Django's documentation.
+./manage.py makemigrations` first. But that's in Django's documentation.
 
 The app is, by default, listening on the default HTTP and HTTPS port (80 and
-433), but any HTTP request will be redirected to HTTPS.
+433), but any HTTP request will be redirected to HTTPS. Accessing the keycloak
+server is possible via the 8080 port.
 
 ### Running into production
 

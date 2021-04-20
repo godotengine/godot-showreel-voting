@@ -1,5 +1,11 @@
 {% load static %}
 
-<div class="login_bnt">
-    <a href="{% url 'social:begin' 'github' %}"><img src="{% static 'vote/images/github-brands.svg' %}">Login with GitHub</a>
-</div>
+{% if user.is_authenticated %}
+  <p>Current user: {{ user.email }}</p>
+  <form action="{% url 'oidc_logout' %}" method="post">
+    {% csrf_token %}
+    <input type="submit" value="logout">
+  </form>
+{% else %}
+  <a href="{% url 'oidc_authentication_init' %}">Login</a>
+{% endif %}

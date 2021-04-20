@@ -18,11 +18,13 @@ from django.contrib import admin
 from django.contrib.auth import views
 
 urlpatterns = [
+    # Login
     path('login/', views.LoginView.as_view(), name='login'),
-    path('logout/', views.LogoutView.as_view(), name='logout'),
+    path('', include('mozilla_django_oidc.urls')),
 
+    # Admin
     path('admin/', admin.site.urls),
-    path('oauth/', include('social_django.urls', namespace='social')),
 
+    # Vote
     path('', include('vote.urls')),
 ]

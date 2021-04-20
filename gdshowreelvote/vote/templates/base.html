@@ -8,16 +8,29 @@
     <body>
         <header>
             <div class="container flex align-center">
-                <a href="{% url "vote" %}" id="logo-link"><img class="nav-logo" src="{% static 'vote/images/logo.svg' %}" alt="Godot Engine" height="48"></a>
+                <a href="{% url 'vote' %}" id="logo-link"><img class="nav-logo" src="{% static 'vote/images/logo.svg' %}" alt="Godot Engine" height="48"></a>
                 <nav class="nav">
                 {% block nav %}
                     {% include "includes/navbar.html" %}
                 {% endblock %}
                 </nav>
                 <span class="username">{{ user }}</span>
-                <a href="{% url "logout" %}" id="logout-link"><i class="fas fa-sign-out-alt"></i></a>
+                <form action="{% url 'oidc_logout' %}" method="post" id="logout-link">
+                    {% csrf_token %}
+                    <button type="submit" class="fabutton" title="Logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </form>
+
             </div>
         </header>
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
         <div class="head">
             <div class="container flex eqsize responsive">
                 <div class="main">
