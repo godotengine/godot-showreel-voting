@@ -13,9 +13,12 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import path, include
 from django.contrib import admin
 from django.contrib.auth import views
+from django.conf import settings
 
 urlpatterns = [
     # Login
@@ -28,3 +31,7 @@ urlpatterns = [
     # Vote
     path('', include('vote.urls')),
 ]
+
+# Serve static files
+if settings.SERVE_STATICS:
+    urlpatterns += staticfiles_urlpatterns()

@@ -36,8 +36,8 @@ services:
     depends_on:
       - database
       - keycloak
-    volumes:
-      - statics:/var/www/showreel.godotengine.org/static/
+    #volumes:
+      #- statics:/var/www/showreel.godotengine.org/static/
     secrets:
       - gdshowreel_django_db_password
       - gdshowreel_django_secret
@@ -47,7 +47,7 @@ services:
   nginx:
     build: nginx
     volumes:
-      - statics:/var/www/showreel.godotengine.org/static/
+      #- statics:/var/www/showreel.godotengine.org/static/
       - ./certificates:/etc/nginx/ssl/ # WARNING: in production, change to real certificates storage dir
     ports:
       - "80:80"
@@ -67,5 +67,6 @@ secrets:
   gdshowreel_oidc_rp_client_secret:
     file: ./secrets/gdshowreel_oidc_rp_client_secret.txt
 
-volumes:
-  statics:
+# The following lines and the corresponding volumes mounts can be uncommented for allowing the nginx server to serve the static files (if the Django app doesn't do it)
+#volumes:
+#  statics:
