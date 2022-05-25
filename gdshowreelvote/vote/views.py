@@ -155,8 +155,7 @@ class ShowreelResultsAsCSVView(LoginRequiredMixin, UserPassesTestMixin, SingleOb
         showreel = self.get_object()
 
         votes = Vote.objects.filter(video__showreel=showreel).select_related('video', 'user')
-        video_set = votes.values_list('video', flat=True).distinct()
-        video_set = Video.objects.filter(id__in=video_set)
+        video_set = Video.objects.filter(showreel=showreel)
         user_set = votes.values_list('user', flat=True).distinct()
         user_set = User.objects.filter(id__in=user_set)
 
