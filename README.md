@@ -29,7 +29,7 @@ To setup your keycloak instance you will have at least to:
 - Setup the client access type as "confidential".
 - Get the secret in the Crendetials section, it's needed in the web app
   configuration.
-- In the Mappers section, create a built-in mapper for "realm roles".
+- In the Mappers section, create a **built-in** mapper for "realm roles".
 
 ### Running into testing environment
 
@@ -39,7 +39,7 @@ modify it. However you will need to:
  files named `showreel.godotengine.org.crt` and `showreel.godotengine.org.key`,
  which are the private key and the certificate for the website. In a testing
  environment, you should probably use a self-signed certificate,
-- Create four files in the `./secrets` folder, named
+- Create five files in the `./secrets` folder, named
   `gdshowreel_django_db_root_password.txt`,
   `gdshowreel_django_db_password.txt`, `gdshowreel_django_secret.txt`,
   `gdshowreel_oidc_rp_client_id.txt` and
@@ -47,11 +47,11 @@ modify it. However you will need to:
   random passwords, they are used to, respectively, setup the mysql root
   password, communicate between django and the database, and the internal
   django secret. The last two ones are should be provided by the keycloak
-  instance.
+  instance, when setting up a client.
 
 By default, the `./pgdata` will contain the database data.
 
-With docker-compose installed, shoud should then be able to buil and run the
+With docker-compose installed, you should then be able to buil and run the
 app using: `docker-compose build; docker-compose up nginx`
 
 Note that, the first time you run the application, you might need to setup the
