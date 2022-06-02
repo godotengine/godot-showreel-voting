@@ -88,6 +88,46 @@ you might have a look to the files:
 Indeed, you should also refer to the documentations of each of those components
 to undertand what those file do.
 
+### Web application standablone setup
+
+As it may be ran in an independent setup too, the web application also exposes
+some of its settings as environment variables. Here is the list of exposed
+settings and their default values:
+
+```
+GDSHOWREEL_DJANGO_SECRET_KEY = <provided via docker secrets> # Django's SECRET_KEY
+GDSHOWREEL_DJANGO_DEBUG = "" # Whether or not to run django in debug mode
+GDSHOWREEL_DJANGO_ALLOWED_HOSTS = "" # Allowed hosts
+
+GDSHOWREEL_DATABASE_NAME = "gdshowreel" # Database name
+GDSHOWREEL_DATABASE_USER = "mysql" # Database user name
+GDSHOWREEL_DATABASE_PASSWORD = <provided via docker secrets> # Database password
+GDSHOWREEL_DATABASE_HOST = "database" # Database host
+GDSHOWREEL_DATABASE_PORT = "" # database port
+
+GDSHOWREEL_SERVE_STATICS = "yes" # Whether or not django should serve static files
+GDSHOWREEL_DJANGO_STATIC_ROOT = "/var/www/showreel.godotengine.org/static/" # Location of the static files
+
+GDSHOWREEL_OIDC_RP_CLIENT_ID = <provided via docker secrets> # Keycloak OICD client IC
+GDSHOWREEL_OIDC_RP_CLIENT_SECRET = <provided via docker secrets> # Keycloak OICD client password
+
+GDSHOWREEL_KEYCLOAK_REALM = "master" # Keycloak realm for the application
+GDSHOWREEL_KEYCLOAK_HOSTNAME = "keycloak:8080" # Keycloak host
+GDSHOWREEL_KEYCLOAK_ROLES_PATH_IN_CLAIMS = "realm_access,roles" # Path to roles in keycloak claims
+GDSHOWREEL_KEYCLOAK_STAFF_ROLE = "staff" # Staff role in keycloak. Staff has access to the administration interface.
+GDSHOWREEL_KEYCLOAK_SUPERUSER_ROLE = "admin" # Superusers role in keycloak. Same as staff plus a few more permissions.
+
+# OICD endpoints
+GDSHOWREEL_OIDC_OP_AUTHORIZATION_ENDPOINT = "http://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/auth"
+GDSHOWREEL_OIDC_OP_TOKEN_ENDPOINT = "http://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/token"
+GDSHOWREEL_OIDC_OP_USER_ENDPOINT = "http://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/userinfo"
+GDSHOWREEL_OIDC_OP_JWKS_ENDPOINT = "http://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/certs"
+GDSHOWREEL_OIDC_OP_LOGOUT_ENDPOINT = "http://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/logout"
+
+GDSHOWREEL_VOTE_MAX_SUBMISSIONS_PER_SHOWREEL = 3 # How many submissions users can make to the same showreel
+GDSHOWREEL_VOTE_ONLY_STAFF_CAN_VOTE = "yes" # If yes, only users with the staff role can rate the showreel videos
+```
+
 ## License
 
 This website's code is provided under the MIT license.

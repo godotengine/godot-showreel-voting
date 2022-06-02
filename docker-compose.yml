@@ -29,8 +29,8 @@ services:
   web:
     build: gdshowreelvote
     environment:
-      - DJANGO_DEBUG=True # WARNING: in production, set to false
-      - DJANGO_ALLOWED_HOSTS=* # WARNING: in production, set the real domain name
+      - GDSHOWREEL_DJANGO_DEBUG=True # WARNING: in production, set to false
+      - GDSHOWREEL_DJANGO_ALLOWED_HOSTS=* # WARNING: in production, set the real domain name
     expose:
       - "8000"
     depends_on:
