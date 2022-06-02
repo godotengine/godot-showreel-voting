@@ -13,6 +13,14 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 from get_docker_secret import get_docker_secret
 
+def as_yes_no(s : str):
+    s = s.lower()
+    if s in ['true', 't', 'y', 'yes']:
+        return True
+    if s in ['false', 'f', 'n', 'no']:
+        return False
+    return None
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -21,13 +29,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = get_docker_secret('gdshowreel_django_secret', default=None)
+SECRET_KEY = os.environ.get('GDSHOWREEL_DJANGO_SECRET_KEY', get_docker_secret('gdshowreel_django_secret', default=None))
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
+DEBUG = as_yes_no(os.environ.get('GDSHOWREEL_DJANGO_DEBUG', 'false'))
 
 # Domain name
-ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS','').split(',')
+ALLOWED_HOSTS = os.environ.get('GDSHOWREEL_DJANGO_ALLOWED_HOSTS','').split(',')
 
 # Application definition
 
@@ -85,11 +93,11 @@ WSGI_APPLICATION = 'gdshowreelvote.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'gdshowreel',
-        'USER': 'mysql',
-        'PASSWORD': get_docker_secret('gdshowreel_django_db_password'),
-        'HOST': 'database',
-        'PORT': '',
+        'NAME': os.environ.get('GDSHOWREEL_DATABASE_NAME', 'gdshowreel'),
+        'USER': os.environ.get('GDSHOWREEL_DATABASE_USER', 'mysql'),
+        'PASSWORD': os.environ.get('GDSHOWREEL_DATABASE_PASSWORD', get_docker_secret('gdshowreel_django_db_password')),
+        'HOST': os.environ.get('GDSHOWREEL_DATABASE_HOST', 'database'),
+        'PORT': os.environ.get('GDSHOWREEL_DATABASE_PORT', ''),
     }
 }
 
@@ -129,9 +137,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-SERVE_STATICS = True
-STATIC_ROOT = os.environ.get('DJANGO_STATIC_ROOT', "/var/www/showreel.godotengine.org/static/")
-STATIC_URL = '/static/' 
+SERVE_STATICS = as_yes_no(os.environ.get('GDSHOWREEL_SERVE_STATICS', "yes"))
+STATIC_ROOT = os.environ.get('GDSHOWREEL_STATIC_ROOT', "/var/www/showreel.godotengine.org/static/")
+STATIC_URL = '/static/'
 
 ### Authentication ###
 AUTHENTICATION_BACKENDS = [
@@ -142,28 +150,27 @@ AUTHENTICATION_BACKENDS = [
 AUTH_USER_MODEL = 'vote.User'
 
 # OICD client connection
-OIDC_RP_CLIENT_ID = get_docker_secret('gdshowreel_oidc_rp_client_id')
-OIDC_RP_CLIENT_SECRET = get_docker_secret('gdshowreel_oidc_rp_client_secret')
-print(OIDC_RP_CLIENT_SECRET)
+OIDC_RP_CLIENT_ID = os.environ.get('GDSHOWREEL_OIDC_RP_CLIENT_ID', get_docker_secret('gdshowreel_oidc_rp_client_id'))
+OIDC_RP_CLIENT_SECRET = os.environ.get('GDSHOWREEL_OIDC_RP_CLIENT_SECRET', get_docker_secret('gdshowreel_oidc_rp_client_secret'))
 
 # Signing algorihtm
 OIDC_RP_SIGN_ALGO = 'RS256'
 
 # Keycloak configuration
-KEYCLOAK_REALM = "master"
-KEYCLOAK_HOSTNAME = "keycloak:8080"
+KEYCLOAK_REALM = os.environ.get('GDSHOWREEL_KEYCLOAK_REALM', "master")
+KEYCLOAK_HOSTNAME = os.environ.get('GDSHOWREEL_KEYCLOAK_HOSTNAME', "172.18.0.2:8080")
 
 # Keycloak roles in authentication claims
-KEYCLOAK_ROLES_PATH_IN_CLAIMS = ["realm_access", "roles"]
-KEYCLOAK_STAFF_ROLE = "staff"
-KEYCLOAK_SUPERUSER_ROLE = "admin"
+KEYCLOAK_ROLES_PATH_IN_CLAIMS = os.environ.get('GDSHOWREEL_KEYCLOAK_ROLES_PATH_IN_CLAIMS', "realm_access,roles").split(',')
+KEYCLOAK_STAFF_ROLE = os.environ.get('GDSHOWREEL_KEYCLOAK_STAFF_ROLE', "staff")
+KEYCLOAK_SUPERUSER_ROLE = os.environ.get('GDSHOWREEL_KEYCLOAK_SUPERUSER_ROLE', "admin")
 
 # Keycloak OICD endpoints. You can get those at this endpoint http://{keycloakhost}:{port}/auth/realms/{realm}/.well-known/openid-configuration
-OIDC_OP_AUTHORIZATION_ENDPOINT = f"http://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/auth" # URL of the OIDC OP authorization endpoint
-OIDC_OP_TOKEN_ENDPOINT = f"http://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/token" # URL of the OIDC OP token endpoint
-OIDC_OP_USER_ENDPOINT = f"http://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/userinfo" # URL of the OIDC OP userinfo endpoint
-OIDC_OP_JWKS_ENDPOINT = f"http://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/certs"
-OIDC_OP_LOGOUT_ENDPOINT = f"http://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/logout"
+OIDC_OP_AUTHORIZATION_ENDPOINT = os.environ.get('GDSHOWREEL_OIDC_OP_AUTHORIZATION_ENDPOINT', f"http://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/auth") # URL of the OIDC OP authorization endpoint
+OIDC_OP_TOKEN_ENDPOINT = os.environ.get('GDSHOWREEL_OIDC_OP_TOKEN_ENDPOINT', f"http://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/token") # URL of the OIDC OP token endpoint
+OIDC_OP_USER_ENDPOINT = os.environ.get('GDSHOWREEL_OIDC_OP_USER_ENDPOINT', f"http://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/userinfo") # URL of the OIDC OP userinfo endpoint
+OIDC_OP_JWKS_ENDPOINT = os.environ.get('GDSHOWREEL_OIDC_OP_JWKS_ENDPOINT', f"http://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/certs")
+OIDC_OP_LOGOUT_ENDPOINT = os.environ.get('GDSHOWREEL_OIDC_OP_LOGOUT_ENDPOINT', f"http://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/logout")
 
 # URLS
 LOGIN_REDIRECT_URL = '/submissions'
@@ -181,5 +188,5 @@ CSRF_COOKIE_SECURE = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 ### Custom settings ###
-VOTE_MAX_SUBMISSIONS_PER_SHOWREEL = 3
-VOTE_ONLY_STAFF_CAN_VOTE = True
+VOTE_MAX_SUBMISSIONS_PER_SHOWREEL = os.environ.get('GDSHOWREEL_VOTE_MAX_SUBMISSIONS_PER_SHOWREEL', 3)
+VOTE_ONLY_STAFF_CAN_VOTE = as_yes_no(os.environ.get('GDSHOWREEL_VOTE_ONLY_STAFF_CAN_VOTE', "yes"))
