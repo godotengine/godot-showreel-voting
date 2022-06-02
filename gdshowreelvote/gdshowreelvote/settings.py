@@ -158,7 +158,7 @@ OIDC_RP_SIGN_ALGO = 'RS256'
 
 # Keycloak configuration
 KEYCLOAK_REALM = os.environ.get('GDSHOWREEL_KEYCLOAK_REALM', "master")
-KEYCLOAK_HOSTNAME = os.environ.get('GDSHOWREEL_KEYCLOAK_HOSTNAME', "172.18.0.2:8080")
+KEYCLOAK_HOSTNAME = os.environ.get('GDSHOWREEL_KEYCLOAK_HOSTNAME', "keycloak:8080")
 
 # Keycloak roles in authentication claims
 KEYCLOAK_ROLES_PATH_IN_CLAIMS = os.environ.get('GDSHOWREEL_KEYCLOAK_ROLES_PATH_IN_CLAIMS', "realm_access,roles").split(',')

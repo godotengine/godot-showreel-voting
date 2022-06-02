@@ -19,7 +19,7 @@ services:
 
   # WARNING: this keycloak configuration is not ready for production.
   keycloak:
-    image: quay.io/keycloak/keycloak:12.0.4
+    image: quay.io/keycloak/keycloak:16.1.1
     environment:
       - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD=admin

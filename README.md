@@ -61,7 +61,10 @@ change to django models might also require running `docker-compose run web
 
 The app is, by default, listening on the default HTTP and HTTPS port (80 and
 433), but any HTTP request will be redirected to HTTPS. Accessing the keycloak
-server is possible via the 8080 port.
+server is possible via the 8080 port on the localhost machine, however, by
+default, the testing environment will redirect you to `keycloak:8080`. As a
+consequence, `keycloak` should be added to `/etc/hosts` to redirect to
+`127.0.0.1`.
 
 ### Running into production
 
