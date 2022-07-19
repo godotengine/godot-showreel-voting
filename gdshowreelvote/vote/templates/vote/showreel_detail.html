@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}
+{{ object.title }} ({{ object.get_status_display }})
+{% endblock %}
+
+{% block nav %}
+    {% include "includes/navbar.html" with active="showreels" %}
+{% endblock %}
+
+{% block content %}
+    <div class="go-back-button">
+        <a href="{% url 'showreels' %}"><i class="fas fa-arrow-left"></i> Go back to showreel list</a>
+    </div>
+    {% if not video_list %}
+        <p>This showreel has no video.</p>
+    {% else %}
+        <table>
+        <tr>
+            <th>Video link</th>
+            <th>Game title</th>
+            <th>Author</th>
+            <th>Your rating</th>
+            <th>Actions</th>
+        </tr>
+        {% for item in video_list %}
+            <tr>
+                <td>
+                    {% if item.video.get_youtube_video_id %}
+                        <iframe width="240" height="135"  src="https://www.youtube.com/embed/{{item.video.get_youtube_video_id}}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    {% else %}
+                        <a href="{{ item.video.video_link }}">Link</a>
+                    {% endif%}
+                </td>
+                <td>{{ item.video.game }}</td>
+                <td>{{ item.video.author.username }}</td>
+                <td>
+                    <form action="javascript:;" onsubmit="javascript:submitRating('{% url 'vote-video' item.video.id %}', this)">
+                        {% csrf_token %}
+                        <div class="five_stars_wrapper">
+                            <div class="five_stars">
+                                <input type="hidden" class="rating" name="rating" value="{% if item.vote %}{{ item.vote.rating }}{% else %}-1{% endif %}">
+                                <button type="submit" onclick="this.form.elements['rating'].value=this.value;" value="1">★</button>
+                                <button type="submit" onclick="this.form.elements['rating'].value=this.value;" value="2">★</button>
+                                <button type="submit" onclick="this.form.elements['rating'].value=this.value;" value="3">★</button>
+                                <button type="submit" onclick="this.form.elements['rating'].value=this.value;" value="4">★</button>
+                                <button type="submit" onclick="this.form.elements['rating'].value=this.value;" value="5">★</button>
+                            </div>
+                        </div>
+                    </form>
+                </td>
+                <td><a href="{% url 'admin:vote_video_change' item.video.id %}"><i class="fas fa-edit"></i></a></td>
+            </tr> 
+        {% endfor %}
+        </table>
+
+        <script>
+            function updateStars(div, hovered) {
+                var stars = div.querySelectorAll('button')
+                var i = 0
+                for (; i <= hovered; i++) {
+                    stars[i].style.color = "#c59b08";
+                }
+                for (; i < stars.length; i++) {
+                    stars[i].style.color = "";
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                document.querySelectorAll('.five_stars').forEach(div => {
+                        var stars = div.querySelectorAll('button')
+                        stars.forEach((button, i) => {
+                            button.addEventListener('mouseenter', event => {
+                                updateStars(div, i);
+                            })
+                            button.addEventListener('mouseleave', event => {
+                                var element = div.querySelector(".rating")
+                                updateStars(div, element.value-1);
+                            })
+                        })
+                        var element = div.querySelector(".rating")
+                        updateStars(div, element.value-1);
+                    }
+                )
+            }, false);
+
+            function submitRating(url, form) {
+                var data = new FormData(form);
+                const request = new Request(url, {
+                    method: 'POST',
+                    body: data
+                });
+                fetch(request)
+                    .then(response => {
+                        if (response.status != 200) {
+                            alers("Error: Vote could not be submitted.")
+                        } 
+                    })
+            }
+        </script>
+    {% endif %}
+{% endblock %}

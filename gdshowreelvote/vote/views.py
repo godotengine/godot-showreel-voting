@@ -1,14 +1,13 @@
-from urllib.parse import urlparse, parse_qs
-
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.generic.list import ListView
-from django.views.generic import CreateView, DeleteView, UpdateView
+from django.views.generic import CreateView, DeleteView, UpdateView, DetailView
 from django.views.generic.detail import SingleObjectMixin
+from django.views.generic.edit import ModelFormMixin, ProcessFormView
 from django.views.generic.base import TemplateView
 from django.views import View
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 
 from .models import Video, Vote, Showreel, User
@@ -29,27 +28,13 @@ class VoteView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
         # Get a not rated video
         not_rated_videos = Video.objects.filter(showreel__status="VOTE").exclude(author=self.request.user).exclude(id__in=voted)
-        
+
         if len(not_rated_videos) == 0:
             return None
-        else: 
+        else:
             hash = (self.request.user.email, len(not_rated_videos)).__hash__()
             video = not_rated_videos[hash % len(not_rated_videos)]
             return video
-
-    def _youtube_video_id(self, value):
-        query = urlparse(value)
-        if query.hostname == 'youtu.be':
-            return query.path[1:]
-        if query.hostname in ('www.youtube.com', 'youtube.com'):
-            if query.path == '/watch':
-                p = parse_qs(query.query)
-                return p['v'][0]
-            if query.path[:7] == '/embed/':
-                return query.path.split('/')[2]
-            if query.path[:3] == '/v/':
-                return query.path.split('/')[2]
-        return None
 
     def form_valid(self, form):
         obj = form.save(commit=False)
@@ -60,16 +45,8 @@ class VoteView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        video = self._get_not_rated_video()
-        if video:
-            context["video"] = video
-            youtuber_video_id =  self._youtube_video_id(video.video_link)
-            if youtuber_video_id:
-                context["youtube_video_id"] = youtuber_video_id
-
+        context["video"] = self._get_not_rated_video()
         context["can_undo"] = Vote.objects.filter(user=self.request.user, video__showreel__status=Showreel.VOTE).exists()
-
         return context
 
     def test_func(self):
@@ -96,9 +73,44 @@ class LastVoteDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def handle_no_permission(self):
         return redirect('submissions')
 
+# Either create or update a vote for a given video. Only POST.
+class VoteVideoView(LoginRequiredMixin, UserPassesTestMixin, ModelFormMixin, ProcessFormView):
+    http_method_names = ['post']
+    model = Vote
+    fields = ["rating"]
+
+    def get_object(self, *args, **kwargs):
+        video = Video.objects.get(pk=self.kwargs["video_pk"])
+        try:
+            return Vote.objects.get(video=video, user=self.request.user)
+        except Vote.DoesNotExist:
+            return None
+
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        obj.user = self.request.user
+        obj.video = Video.objects.get(pk=self.kwargs["video_pk"])
+        obj.save()
+        return super(VoteVideoView, self).form_valid(form)
+
+    def form_invalid(self, form):
+        return JsonResponse(status=400, data=form.errors)
+
+    def get_success_url(self): # Should be useless.
+        video = Video.objects.get(pk=self.kwargs["video_pk"])
+        return reverse('showreel-overview', args=[video.showreel.id])
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super(VoteVideoView, self).post(request, *args, **kwargs)
+
+    def test_func(self):
+        return self.request.user.is_staff
+
 # Display the list of a user's submissions
 class UserVideoListView(LoginRequiredMixin, ListView):
     model = Video
+    template_name = "vote/video_user_list.html"
 
     def get_queryset(self):
         return Video.objects.filter(author=self.request.user).exclude(showreel__status=Showreel.CLOSED)
@@ -140,6 +152,30 @@ class VideoDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         obj = self.get_object()
         return (self.request.user == obj.author) and obj.showreel.status == Showreel.OPENED_TO_SUBMISSIONS
+
+# Display the list of all open submissions
+class ShowreelView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = Showreel
+
+    def get_context_data(self, **kwargs):0
+        context = super().get_context_data(**kwargs)
+        context["video_list"] = []
+        for video in Video.objects.filter(showreel=self.object):
+            video_and_vote = {}
+            video_and_vote["video"] = video
+            video_and_vote["vote"] = Vote.objects.filter(video=video, user=self.request.user).first()
+            context["video_list"].append(video_and_vote)
+        return context
+
+    def test_func(self):
+        return self.request.user.is_staff
+
+class ShowreelListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = Showreel
+    ordering = ['status', 'title']
+
+    def test_func(self):
+        return self.request.user.is_staff
 
 # Display the about page
 class AboutView(LoginRequiredMixin, TemplateView):

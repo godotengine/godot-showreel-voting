@@ -7,8 +7,6 @@ from vote.models import User
 
 class OIDCAuthenticationBackend(BaseOIDCAuthenticationBackend):
     def update_user(self, user, claims):
-        print(self.request)
-
         user.email = claims.get('email', '')
         user.username = claims.get('preferred_username', '')
 
