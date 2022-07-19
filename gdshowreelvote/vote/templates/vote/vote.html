@@ -15,7 +15,7 @@ video showreel submissions rating
 
 {% block content %}
     {% if can_undo %}
-    <form class="delete-last-vote-form" action={% url 'delete-last-vote' %} method="post">
+    <form class="go-back-button" style="float:left" action={% url 'delete-last-vote' %} method="post">
         {% csrf_token %}
         <button type="submit"><i class="fas fa-arrow-left"></i></button>
     </form>
@@ -26,10 +26,10 @@ video showreel submissions rating
             <i>"{{ video.game }}"</i> proposed by <b>{{ video.author_name }}</b>
         </div>
 
-        {% if youtube_video_id %}
-            <iframe width="1200" height="675"  src="https://www.youtube.com/embed/{{youtube_video_id}}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        {% if video.get_youtube_video_id %}
+            <iframe width="1200" height="675"  src="https://www.youtube.com/embed/{{video.get_youtube_video_id}}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         {% else %}
-            Link to the video : <a href="{{ video.video_link }}"> {{ video.video_link }} </a>
+            <a href="{{ video.video_link }}">Link</a>
         {% endif%}
 
         <form method="post">
@@ -38,40 +38,43 @@ video showreel submissions rating
             <div class="five_stars_wrapper">
                 <label for="form.rating.name">Your rating: </label>
                 <div class="five_stars">
-                    <button type="submit" id="star1" name="{{ form.rating.name }}" value="1">★</button><button type="submit" id="star2" name="{{ form.rating.name }}" value="2">★</button><button type="submit" id="star3" name="{{ form.rating.name }}" value="3">★</button><button type="submit" id="star4" name="{{ form.rating.name }}" value="4">★</button><button type="submit" id="star5" name="{{ form.rating.name }}" value="5">★</button>
+                    <button type="submit" id="star1" name="{{ form.rating.name }}" value="1">★</button>
+                    <button type="submit" id="star2" name="{{ form.rating.name }}" value="2">★</button>
+                    <button type="submit" id="star3" name="{{ form.rating.name }}" value="3">★</button>
+                    <button type="submit" id="star4" name="{{ form.rating.name }}" value="4">★</button>
+                    <button type="submit" id="star5" name="{{ form.rating.name }}" value="5">★</button>
                 </div>
                 {% if form.rating.help_text %}
-                <p class="help">{{  form.rating.help_text|safe }}</p>
+                <p class="help">{{ form.rating.help_text|safe }}</p>
                 {% endif %}                
                 {{ form.rating.errors }}
             </div>
         </form>
 
         <script>
-            var div = document.querySelectorAll('.five_stars > button').forEach(item => {
-                item.addEventListener('mouseenter', event => {
-                    var stars = document.querySelectorAll('.five_stars > button')
-                    var checked = true
-                    for (var i = 0; i < stars.length; i++) {
-                        if (checked) {
-                            stars[i].style.color = "#c59b08";
-                        } else {
-                            stars[i].style.color = "";
-                        }
-                        if (event.target.value == stars[i].value) {
-                            checked = false
-                        }
-                    }
-                })
-            })
-            var div = document.querySelectorAll('.five_stars > button').forEach(item => {
-                item.addEventListener('mouseleave', event => {
-                    var stars = document.querySelectorAll('.five_stars > button')
-                    for (var i = 0; i < stars.length; i++) {
-                        stars[i].style.color = "";
-                    }
-                })
-            })
+            function updateStars(div, hovered) {
+                var stars = div.querySelectorAll('button')
+                var i = 0
+                for (; i <= hovered; i++) {
+                    stars[i].style.color = "#c59b08";
+                }
+                for (; i < stars.length; i++) {
+                    stars[i].style.color = "";
+                }
+            }
+
+            document.querySelectorAll('.five_stars').forEach(div => {
+                    var stars = div.querySelectorAll('button')
+                    stars.forEach((button, i) => {
+                        button.addEventListener('mouseenter', event => {
+                            updateStars(div, i);
+                        })
+                        button.addEventListener('mouseleave', event => {
+                            updateStars(div, -1);
+                        })
+                    })
+                }
+            )
         </script>
     {% else %}
         <div id="video_abstract"> 

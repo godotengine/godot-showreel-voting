@@ -1,3 +1,5 @@
+from urllib.parse import urlparse, parse_qs
+
 from django.db import models
 from django.core.validators import URLValidator, MaxValueValidator, MinValueValidator, EmailValidator
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
@@ -77,7 +79,7 @@ class Showreel(models.Model):
         max_length=6,
         choices=(
             (OPENED_TO_SUBMISSIONS, 'Open to submissions'),
-            (VOTE, 'Vote'),
+            (VOTE, 'Open to votes'),
             (CLOSED, 'Closed'),
         ),
         default=CLOSED,
@@ -96,6 +98,22 @@ class Video(models.Model):
     author_name = models.CharField(max_length=200, blank=False, default="")
     video_link = models.CharField(max_length=200, blank=False, unique=True, validators=[URLValidator()])
     follow_me_link = models.CharField(max_length=200, default="", blank=True, validators=[URLValidator()])
+
+    def get_youtube_video_id(self):
+        query = urlparse(self.video_link)
+        if query.hostname == 'youtu.be':
+            return query.path[1:]
+        if query.hostname in ('www.youtube.com', 'youtube.com'):
+            if query.path == '/watch':
+                p = parse_qs(query.query)
+                return p['v'][0]
+            if query.path[:7] == '/embed/':
+                return query.path.split('/')[2]
+            if query.path[:8] == '/shorts/':
+                return query.path.split('/')[2]
+            if query.path[:3] == '/v/':
+                return query.path.split('/')[2]
+        return None
 
     def __str__(self):
         return f"{self.author} - {self.game} - {self.video_link}"

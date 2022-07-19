@@ -29,7 +29,10 @@ To setup your keycloak instance you will have at least to:
 - Setup the client access type as "confidential".
 - Get the secret in the Crendetials section, it's needed in the web app
   configuration.
-- In the Mappers section, create a **built-in** mapper for "realm roles".
+- In the Mappers section, create a **built-in** mapper for "realm roles" and
+  another for "email".
+- If you are using the default admin account, give it a fake email address in
+  keycloack's user configuration and check the "email verified" checkbox.
 
 ### Running into testing environment
 

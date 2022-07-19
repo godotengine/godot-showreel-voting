@@ -347,15 +347,14 @@ table .action_icon {
   margin: 0 5px;
 }
 
-form.delete-last-vote-form {
-  float: left;
-  margin-left: 10px;
+.go-back-button {
+  margin: 10px 5px;
 }
 
-form.delete-last-vote-form button {
+.go-back-button button, .go-back-button a {
   background: none;
   border: none;
-  color:var(--base-color);
+  color:var(--base-color-darker);
 }
 
 /*  
@@ -514,12 +513,12 @@ p.small:empty {
 
 .btn.disabled {
     color: var(--base-color-text);
-    background-color: var(--base-color);
+    background-color: var(--base-color-text-subtitle);
 }
 .btn.disabled:hover {
   color: var(--base-color-text);
-  background-color: var(--base-color);
-  cursor: none;
+  background-color: var(--base-color-text-subtitle);
+  cursor: default;
 }
 
 input.btn,
@@ -884,11 +883,11 @@ pre > code {
   padding: 0 10px;
   text-align: center;
 }
-.five_stars > button{
+.five_stars > button {
   border: None;
   background: None;
   font-size: 3em;
-  color: var(--base-color);
+  color: var(--dark-color-text);
   padding: 0;
   margin: 0;
 }

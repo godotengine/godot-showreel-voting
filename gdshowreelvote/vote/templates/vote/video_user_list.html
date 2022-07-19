@@ -39,7 +39,7 @@ My submissions
             {% if has_open_showreels %}
                 <a class="btn" href="{% url 'new-submission' %}">New submission</a>
             {% else %}
-                <span class="btn disabled">New submission</span>
+                <a class="btn disabled" title="No showreel is currently open to submissions">New submission</a>
             {% endif %}
         <div>
     {% else %}
