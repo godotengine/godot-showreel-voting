@@ -9,7 +9,7 @@
         {% if user.is_authenticated %}
         <p class="errornote">
             You are authenticated as {{ user.email }}, but are not authorized to
-            access this page. Would you like to login to a different account?
+            access this page. Would you like to login using a different account?
         </p>
         {% endif %}
         {% include "includes/login_button.html" %}

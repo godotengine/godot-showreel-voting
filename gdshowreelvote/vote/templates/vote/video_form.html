@@ -5,7 +5,7 @@ New submission
 {% endblock %}
 
 {% block content %}    
-    <p>Before submitting a video, please make sure it is <a href="{% url "about" %}#eligible">eligible for a showreel</a>. You can also maximize your chances to be selected with <a href="{% url "about" %}#tips">those few tips.</a></p>
+    <p>Before submitting a video, please make sure to read our <a href="{% url "about" %}#requirements-and-recommendations">requirements and recommendations</a></p>
     <form method="post">
         {% csrf_token %}
         {% for field in form %}
