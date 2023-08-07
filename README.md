@@ -1,6 +1,6 @@
 # Godot showreel rating website
 
-This repository hosts the Godot showreel website. It is a video submission and
+This repository hosts the Godot Showreel webapp. It is a video submission and
 voting platform meant to help contributors selecting the best videos to
 showcase Godot engine.
 
@@ -15,14 +15,14 @@ postgres database. The `secrets`, `certificates` and `pgdata` folders are
 defaults folders used as mount points, but they may not be useful in a
 production environment.
 
-The next section requires a good understanding of hwo to use docker compose,
+The next section requires a good understanding of how to use docker compose,
 ngingx and a postgres database. The use of docker-compose should simplify the
-processus a lot but setting up everything in a real production environment
-might be more complex.
+process a lot, but setting up everything in a production environment might be 
+more complex.
 
 ### Keycloak setup
 
-To setup your keycloak instance you will have at least to:
+To setup your keycloak instance you will have to:
 - Connect to you keycloak instance (the default credential for the local
   keycloak instance are admin/admin).
 - Create a new client.
@@ -46,7 +46,7 @@ modify it. However you will need to:
   `gdshowreel_django_db_root_password.txt`,
   `gdshowreel_django_db_password.txt`, `gdshowreel_django_secret.txt`,
   `gdshowreel_oidc_rp_client_id.txt` and
-  `gdshowreel_oidc_rp_client_secret.txt`. The first threee should contains
+  `gdshowreel_oidc_rp_client_secret.txt`. The first three should contain
   random passwords, they are used to, respectively, setup the mysql root
   password, communicate between django and the database, and the internal
   django secret. The last two ones are should be provided by the keycloak
@@ -54,7 +54,7 @@ modify it. However you will need to:
 
 By default, the `./pgdata` will contain the database data.
 
-With docker-compose installed, you should then be able to buil and run the
+With docker-compose installed, you should then be able to build and run the
 app using: `docker-compose build; docker-compose up nginx`
 
 Note that, the first time you run the application, you might need to setup the
@@ -69,7 +69,7 @@ default, the testing environment will redirect you to `keycloak:8080`. As a
 consequence, `keycloak` should be added to `/etc/hosts` to redirect to
 `127.0.0.1`.
 
-### Running into production
+### Running in production
 
 To run in production, you will have at least to:
 - set `DJANGO_DEBUG=False` and ` DJANGO_ALLOWED_HOSTS=<the_website_domain>` in
@@ -91,10 +91,10 @@ you might have a look to the files:
 - `docker-compose.yml` for the postgres database configuration,
 - `gdshowreelvote/gdshowreelvote/settings.py` for the web app.
 
-Indeed, you should also refer to the documentations of each of those components
-to undertand what those file do.
+You should also refer to the documentations of each of those components
+to better understand what those file do.
 
-### Web application standablone setup
+### Web application standalone setup
 
 As it may be ran in an independent setup too, the web application also exposes
 some of its settings as environment variables. Here is the list of exposed
