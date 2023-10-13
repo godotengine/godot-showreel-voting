@@ -1,7 +1,15 @@
 
+# Python
 __pycache__
 *.py[cod]
+.venv
+venv/
+
+# Collected static files
+static/
 
 # VS project
 .vscode
 
+# Ignore the config file as it may contain secrets
+.env
