@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-from get_docker_secret import get_docker_secret
+from dotenv import load_dotenv, find_dotenv
 
 def as_yes_no(s : str):
     s = s.lower()
@@ -24,12 +24,15 @@ def as_yes_no(s : str):
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Load values from .env file for easy configuration
+dotenv_path = find_dotenv(os.path.join(BASE_DIR, '.env'))                                              
+load_dotenv(dotenv_path)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('GDSHOWREEL_DJANGO_SECRET_KEY', get_docker_secret('gdshowreel_django_secret', default=None))
+SECRET_KEY = os.environ.get('GDSHOWREEL_DJANGO_SECRET_KEY', None)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = as_yes_no(os.environ.get('GDSHOWREEL_DJANGO_DEBUG', 'false'))
@@ -95,7 +98,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': os.environ.get('GDSHOWREEL_DATABASE_NAME', 'gdshowreel'),
         'USER': os.environ.get('GDSHOWREEL_DATABASE_USER', 'mysql'),
-        'PASSWORD': os.environ.get('GDSHOWREEL_DATABASE_PASSWORD', get_docker_secret('gdshowreel_django_db_password')),
+        'PASSWORD': os.environ.get('GDSHOWREEL_DATABASE_PASSWORD', ''),
         'HOST': os.environ.get('GDSHOWREEL_DATABASE_HOST', 'database'),
         'PORT': os.environ.get('GDSHOWREEL_DATABASE_PORT', ''),
     }
@@ -150,8 +153,8 @@ AUTHENTICATION_BACKENDS = [
 AUTH_USER_MODEL = 'vote.User'
 
 # OICD client connection
-OIDC_RP_CLIENT_ID = os.environ.get('GDSHOWREEL_OIDC_RP_CLIENT_ID', get_docker_secret('gdshowreel_oidc_rp_client_id'))
-OIDC_RP_CLIENT_SECRET = os.environ.get('GDSHOWREEL_OIDC_RP_CLIENT_SECRET', get_docker_secret('gdshowreel_oidc_rp_client_secret'))
+OIDC_RP_CLIENT_ID = os.environ.get('GDSHOWREEL_OIDC_RP_CLIENT_ID', '')
+OIDC_RP_CLIENT_SECRET = os.environ.get('GDSHOWREEL_OIDC_RP_CLIENT_SECRET', '')
 
 # Signing algorihtm
 OIDC_RP_SIGN_ALGO = 'RS256'
@@ -161,16 +164,16 @@ KEYCLOAK_REALM = os.environ.get('GDSHOWREEL_KEYCLOAK_REALM', "master")
 KEYCLOAK_HOSTNAME = os.environ.get('GDSHOWREEL_KEYCLOAK_HOSTNAME', "keycloak:8080")
 
 # Keycloak roles in authentication claims
-KEYCLOAK_ROLES_PATH_IN_CLAIMS = os.environ.get('GDSHOWREEL_KEYCLOAK_ROLES_PATH_IN_CLAIMS', "realm_access,roles").split(',')
+KEYCLOAK_ROLES_PATH_IN_CLAIMS = os.environ.get('GDSHOWREEL_KEYCLOAK_ROLES_PATH_IN_CLAIMS', "roles").split(',')
 KEYCLOAK_STAFF_ROLE = os.environ.get('GDSHOWREEL_KEYCLOAK_STAFF_ROLE', "staff")
 KEYCLOAK_SUPERUSER_ROLE = os.environ.get('GDSHOWREEL_KEYCLOAK_SUPERUSER_ROLE', "admin")
 
 # Keycloak OICD endpoints. You can get those at this endpoint http://{keycloakhost}:{port}/auth/realms/{realm}/.well-known/openid-configuration
-OIDC_OP_AUTHORIZATION_ENDPOINT = os.environ.get('GDSHOWREEL_OIDC_OP_AUTHORIZATION_ENDPOINT', f"http://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/auth") # URL of the OIDC OP authorization endpoint
-OIDC_OP_TOKEN_ENDPOINT = os.environ.get('GDSHOWREEL_OIDC_OP_TOKEN_ENDPOINT', f"http://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/token") # URL of the OIDC OP token endpoint
-OIDC_OP_USER_ENDPOINT = os.environ.get('GDSHOWREEL_OIDC_OP_USER_ENDPOINT', f"http://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/userinfo") # URL of the OIDC OP userinfo endpoint
-OIDC_OP_JWKS_ENDPOINT = os.environ.get('GDSHOWREEL_OIDC_OP_JWKS_ENDPOINT', f"http://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/certs")
-OIDC_OP_LOGOUT_ENDPOINT = os.environ.get('GDSHOWREEL_OIDC_OP_LOGOUT_ENDPOINT', f"http://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/logout")
+OIDC_OP_AUTHORIZATION_ENDPOINT = os.environ.get('GDSHOWREEL_OIDC_OP_AUTHORIZATION_ENDPOINT', f"https://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/auth") # URL of the OIDC OP authorization endpoint
+OIDC_OP_TOKEN_ENDPOINT = os.environ.get('GDSHOWREEL_OIDC_OP_TOKEN_ENDPOINT', f"https://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/token") # URL of the OIDC OP token endpoint
+OIDC_OP_USER_ENDPOINT = os.environ.get('GDSHOWREEL_OIDC_OP_USER_ENDPOINT', f"https://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/userinfo") # URL of the OIDC OP userinfo endpoint
+OIDC_OP_JWKS_ENDPOINT = os.environ.get('GDSHOWREEL_OIDC_OP_JWKS_ENDPOINT', f"https://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/certs")
+OIDC_OP_LOGOUT_ENDPOINT = os.environ.get('GDSHOWREEL_OIDC_OP_LOGOUT_ENDPOINT', f"https://{KEYCLOAK_HOSTNAME}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/logout")
 
 # URLS
 LOGIN_REDIRECT_URL = '/submissions'

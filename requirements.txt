@@ -1,5 +1,4 @@
 django==3.2.*
-get-docker-secret==1.0.1
-psycopg2==2.8.*
+python-dotenv
 mysqlclient
 mozilla-django-oidc

@@ -157,7 +157,7 @@ class VideoDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 class ShowreelView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Showreel
 
-    def get_context_data(self, **kwargs):0
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["video_list"] = []
         for video in Video.objects.filter(showreel=self.object):
