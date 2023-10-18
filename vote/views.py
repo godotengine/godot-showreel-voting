@@ -178,7 +178,7 @@ class ShowreelListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return self.request.user.is_staff
 
 # Display the about page
-class AboutView(LoginRequiredMixin, TemplateView):
+class AboutView(TemplateView):
     template_name = "vote/about.html"
 
 # Download a csv of a showreel results

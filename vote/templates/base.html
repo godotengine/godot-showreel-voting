@@ -14,6 +14,7 @@
                     {% include "includes/navbar.html" %}
                 {% endblock %}
                 </nav>
+                {% if user.is_authenticated %}
                 <span class="username">{{ user }}</span>
                 <form action="{% url 'oidc_logout' %}" method="post" id="logout-link">
                     {% csrf_token %}
@@ -21,7 +22,11 @@
                         <i class="fas fa-sign-out-alt"></i>
                     </button>
                 </form>
-
+                {% else %}
+                <a class="fabutton noshrink" href="{% url 'oidc_authentication_init' %}">
+                    Login <i class="fas fa-sign-in-alt"></i>
+                </a>
+                {% endif %}
             </div>
         </header>
         {% if messages %}
