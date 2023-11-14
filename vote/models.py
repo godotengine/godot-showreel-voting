@@ -97,7 +97,9 @@ class Video(models.Model):
     game = models.CharField(max_length=200, blank=False, default="")
     author_name = models.CharField(max_length=200, blank=False, default="")
     video_link = models.CharField(max_length=200, blank=False, unique=True, validators=[URLValidator()])
-    follow_me_link = models.CharField(max_length=200, default="", blank=True, validators=[URLValidator()])
+    video_download_link = models.CharField(max_length=200, blank=False, unique=True, validators=[URLValidator()])
+    contact_email = models.CharField(max_length=200, default="", blank=True, validators=[EmailValidator()])
+    follow_me_link = models.CharField(max_length=200, default="", blank=True)
 
     def get_youtube_video_id(self):
         query = urlparse(self.video_link)

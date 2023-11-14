@@ -17,6 +17,8 @@ class SubmissionForm(ModelForm):
         labels = {
             'game': 'Game title',
             'follow_me_link' : 'Where to follow me',
+            'video_download_link': 'Video direct download link',
+            'contact_email': 'Email to Contact you',
             'author_name' : 'Author or studio'
         }
 
