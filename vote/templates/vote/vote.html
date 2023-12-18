@@ -22,14 +22,19 @@ video showreel submissions rating
     {% endif %}
 
     {% if video %}
-        <div id="video_abstract"> 
-            <i>"{{ video.game }}"</i> proposed by <b>{{ video.author_name }}</b>
+        <div id="video_abstract">
+            <p class="text-large">
+                <i>"{{ video.game }}"</i> proposed by <b>{{ video.author_name }}</b>
+                for showreel <b>{{ video.showreel.title }}</b>
+            </p>
         </div>
 
         {% if video.get_youtube_video_id %}
             <iframe width="1200" height="675"  src="https://www.youtube.com/embed/{{video.get_youtube_video_id}}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         {% else %}
-            <a href="{{ video.video_link }}">Link</a>
+            <p class="text-center">
+                External Video: <a href="{{ video.video_link }}">Link</a>
+            </p>
         {% endif%}
 
         <form method="post">
@@ -50,6 +55,10 @@ video showreel submissions rating
                 {{ form.rating.errors }}
             </div>
         </form>
+
+        <p class="text-center">
+            You have voted on <b>{{ amount_rated }}</b> of <b>{{ amount_total }}</b> submissions
+        </p>
 
         <script>
             function updateStars(div, hovered) {
