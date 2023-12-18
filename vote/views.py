@@ -36,6 +36,14 @@ class VoteView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
             video = not_rated_videos[hash % len(not_rated_videos)]
             return video
 
+    def _get_amount_to_rate(self):
+        # Get amount of videos that can be rated
+        return len(Video.objects.filter(showreel__status="VOTE").exclude(author=self.request.user))
+
+    def _get_amount_already_rated(self):
+        # Get amount of videos already rated
+        return len(Vote.objects.filter(user=self.request.user).values_list('video__id', flat=True))
+
     def form_valid(self, form):
         obj = form.save(commit=False)
         obj.user = self.request.user
@@ -46,6 +54,8 @@ class VoteView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["video"] = self._get_not_rated_video()
+        context["amount_total"] = self._get_amount_to_rate()
+        context["amount_rated"] = self._get_amount_already_rated()
         context["can_undo"] = Vote.objects.filter(user=self.request.user, video__showreel__status=Showreel.VOTE).exists()
         return context
 

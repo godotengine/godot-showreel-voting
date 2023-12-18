@@ -456,6 +456,10 @@ ul {
     text-align: justify;
 }
 
+.text-large {
+    font-size: 21px;
+}
+
 
 p.small {
     width: 500px;
