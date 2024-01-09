@@ -215,7 +215,7 @@ class ShowreelResultsAsCSVView(LoginRequiredMixin, UserPassesTestMixin, SingleOb
         response['Content-Disposition'] = f'attachment; filename="results-showreel{showreel.id}.csv"'
 
         writer = csv.writer(response)
-        writer.writerow(["Author", "Follow-me link", "Game", "Video link"] + list(user_set))
+        writer.writerow(["Author", "Follow-me link", "Game", "Video link", "Download link", "Contact email"] + list(user_set))
 
         for video in video_set:
             ratings = []
