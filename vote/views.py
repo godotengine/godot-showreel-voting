@@ -161,7 +161,7 @@ class VideoDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def test_func(self):
         obj = self.get_object()
-        return (self.request.user == obj.author) and obj.showreel.status == Showreel.OPENED_TO_SUBMISSIONS
+        return (self.request.user == obj.author) and obj.showreel.status in [Showreel.OPENED_TO_SUBMISSIONS, Showreel.VOTE]
 
 # Display the list of all open submissions
 class ShowreelView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
