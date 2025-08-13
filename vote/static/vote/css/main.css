@@ -539,6 +539,7 @@ a.btn {
     display: inline-block;
     text-decoration: none;
     font-weight: bold;
+    border-radius: 6px;
 }
 
 input.btn:hover,
@@ -568,7 +569,7 @@ form .field_wrapper {
 
 form .field_wrapper > label {
   display: inline-block;
-  width: 200px;
+  width: 350px;
 }
 
 .login_wrapper {
@@ -898,4 +899,16 @@ pre > code {
   color: var(--dark-color-text);
   padding: 0;
   margin: 0;
+}
+
+/* 2025 changes */
+
+.field_wrapper  input {
+  border-radius: 6px;
+  border: 0;
+  font-size: 17px;
+  padding: 8px 14px;
+}
+.field_wrapper select {
+  font-size: 17px;
 }

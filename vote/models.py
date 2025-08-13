@@ -1,6 +1,8 @@
+import re
 from urllib.parse import urlparse, parse_qs
 
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator, MaxValueValidator, MinValueValidator, EmailValidator
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
@@ -89,6 +91,25 @@ class Showreel(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.status})"
+    
+
+def _validate_youtube_url(value):
+    try:
+        parsed = urlparse(value)
+        hostname = (parsed.hostname or '').lower()
+        valid_hosts = [
+            "youtube.com",
+            "www.youtube.com",
+            "m.youtube.com",
+            "music.youtube.com",
+            "youtu.be"
+        ]
+        if hostname not in valid_hosts:
+                raise ValidationError("URL must be a valid YouTube link.")
+
+    except Exception:
+        raise ValidationError("URL must be a valid YouTube link.")
+
 
 class Video(models.Model):
     showreel = models.ForeignKey(Showreel, blank=False, on_delete=models.CASCADE)
@@ -96,10 +117,11 @@ class Video(models.Model):
 
     game = models.CharField(max_length=200, blank=False, default="")
     author_name = models.CharField(max_length=200, blank=False, default="")
-    video_link = models.CharField(max_length=200, blank=False, unique=True, validators=[URLValidator()])
+    video_link = models.URLField(max_length=200, blank=False, unique=True, validators=[_validate_youtube_url])
     video_download_link = models.CharField(max_length=200, blank=False, unique=True, validators=[URLValidator()])
     contact_email = models.CharField(max_length=200, default="", blank=True, validators=[EmailValidator()])
     follow_me_link = models.CharField(max_length=200, default="", blank=True)
+    store_link = models.URLField(max_length=200, default="", blank=True, validators=[])
 
     def get_youtube_video_id(self):
         query = urlparse(self.video_link)

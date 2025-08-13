@@ -16,10 +16,11 @@ class SubmissionForm(ModelForm):
         exclude = ["author"]
         labels = {
             'game': 'Game title',
-            'follow_me_link' : 'Where to follow me',
+            'follow_me_link' : 'Where to follow me (social media link)',
             'video_download_link': 'Video direct download link',
             'contact_email': 'Email to Contact you',
-            'author_name' : 'Author or studio'
+            'author_name' : 'Author or studio',
+            'store_link': 'Store link (optional)'
         }
 
     def __init__(self, *args, **kwargs):
