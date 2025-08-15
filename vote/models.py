@@ -108,7 +108,7 @@ def _validate_youtube_url(value):
                 raise ValidationError("URL must be a valid YouTube link.")
 
     except Exception:
-        raise ValidationError("Enter a valid URL.")
+        raise ValidationError("URL must be a valid YouTube link.")
 
     
 def _validate_steam_store_url(value):
