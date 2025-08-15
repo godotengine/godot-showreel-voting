@@ -20,7 +20,7 @@ class SubmissionForm(ModelForm):
             'video_download_link': 'Video direct download link',
             'contact_email': 'Email to Contact you',
             'author_name' : 'Author or studio',
-            'steam_link': 'Steam store link (optional)'
+            'store_link': 'Store link (optional)'
         }
 
     def __init__(self, *args, **kwargs):

@@ -110,28 +110,6 @@ def _validate_youtube_url(value):
     except Exception:
         raise ValidationError("URL must be a valid YouTube link.")
 
-    
-def _validate_steam_store_url(value):
-    """
-    Validates that a given URL is a Steam Store link.
-    """
-    try:
-        parsed = urlparse(value)
-        hostname = (parsed.hostname or '').lower()
-
-        if hostname != "store.steampowered.com":
-            raise ValidationError("URL must be from store.steampowered.com")
-
-        # Optional: Check path structure for app/bundle/sub with ID
-        steam_path_pattern = r"^/(app|bundle|sub)/\d+"
-        if not re.match(steam_path_pattern, parsed.path):
-            raise ValidationError(
-                "Steam Store URL must be for an app, bundle, or subscription."
-            )
-
-    except Exception:
-        raise ValidationError("Enter a valid URL.")
-
 
 class Video(models.Model):
     showreel = models.ForeignKey(Showreel, blank=False, on_delete=models.CASCADE)
@@ -143,7 +121,7 @@ class Video(models.Model):
     video_download_link = models.CharField(max_length=200, blank=False, unique=True, validators=[URLValidator()])
     contact_email = models.CharField(max_length=200, default="", blank=True, validators=[EmailValidator()])
     follow_me_link = models.CharField(max_length=200, default="", blank=True)
-    steam_link = models.URLField(max_length=200, default="", blank=True, validators=[_validate_steam_store_url])
+    store_link = models.URLField(max_length=200, default="", blank=True, validators=[])
 
     def get_youtube_video_id(self):
         query = urlparse(self.video_link)

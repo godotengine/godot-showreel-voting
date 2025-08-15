@@ -224,7 +224,7 @@ class ShowreelResultsAsCSVView(LoginRequiredMixin, UserPassesTestMixin, SingleOb
                     ratings.append(d[(user.id, video.id)])
                 else:
                     ratings.append(None)
-            writer.writerow([video.author_name, video.follow_me_link, video.game, video.video_link, video.video_download_link, video.contact_email, video.steam_link] + ratings)
+            writer.writerow([video.author_name, video.follow_me_link, video.game, video.video_link, video.video_download_link, video.contact_email, video.store_link] + ratings)
 
         return response
 
