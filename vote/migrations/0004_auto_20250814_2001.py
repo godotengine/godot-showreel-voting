@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='video',
             name='steam_link',
-            field=models.URLField(blank=True, default='', validators=[vote.models._validate_steam_store_url]),
+            field=models.URLField(blank=True, default=''),
         ),
         migrations.AlterField(
             model_name='video',
