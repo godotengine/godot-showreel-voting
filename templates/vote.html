@@ -1,0 +1,47 @@
+<style>
+	iframe {
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		height: auto;
+		border-radius: 6px;
+	}
+	.col-2 {
+		text-align: left;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		margin: 20px 0px;
+	}
+</style>
+<main>
+	<div class="col-2">
+		<h1>Submission: {{ data.game }}</h1>
+		<div style="display: grid; align-content: end;">
+			<a href="/history" style="text-align: right; font-size: 21px; color: inherit;">Progress: {{ progress.current }}/{{ progress.total }}</a>
+		</div>
+	</div>
+
+	<div >
+		<iframe width="560" height="315" src="{{ data.youtube_embed }}?rel=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+		<div class="panel padded">
+			<h2 style="margin-bottom: 10px; text-align: center;">Should this submission be included in the next showreel?</h2>
+			<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+				<button class="button tertiary">No 👎</button>
+				<button class="button dim" >Skip ⏭️</button>
+				<button class="button primary">Yes 👍</button>
+			</div>
+		</div>
+
+		<div class="panel padded" style="margin-top: 10px;">
+			<h2>Submission info:</h2>
+			<div class="col-2">
+				<p>Project: <strong>{{ data.game }}</strong></p>
+				<p>Video Link: <a href="{{ data.video_link }}" target="_blank">{{ data.video_link }}</a></p>
+				<p>Author: <strong>{{ data.author }}</strong></p>
+				<p>Store Link: <a href="{{ data.store_link }}" target="_blank">{{ data.store_link }}</a></p>
+				<p>Category: <strong>{{ data.category }}</strong></p>
+				<p>Follow them: <a href="{{ data.follow_me_link }}" target="_blank">{{ data.follow_me_link }}</a></p>
+			</div>
+		</div>
+	
+	</div>
+</main>
