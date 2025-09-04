@@ -1,0 +1,56 @@
+<style>
+	.entries {
+		margin-top: 20px;
+		display: grid;
+		gap: 20px;
+		@media (min-width: 768px) {
+			grid-template-columns: 1fr 1fr 1fr;
+		}
+	}
+	.entry {
+		display: grid;
+		grid-template-columns: 1fr;
+	}
+</style>
+<main>
+<h1 style="margin-bottom: 20px;">Vote history</h1>
+<div class="">
+		<p>You have voted {{ progress.current }} out of {{ progress.total }} entries. <a href="/vote">Continue voting</a>.</p>
+
+		<div class="entries">
+			<!-- Items should be sorted by what you Voted last in chronological order -->
+			<!-- This should be a loop -->
+			<div class="entry panel padded">
+				<h2>Brotato</h2>
+				<p>Category: <strong>2025 Godot Desktop/Console Games</strong></p>
+				<p>Author: <strong>Blobfish Games</strong></p>
+				<p>Your vote: <strong>Yes 👍</strong></p>
+				<div style="margin-top: 10px;">
+					<a class="button dim small" href="/vote/22">Edit vote</a>
+				</div>	
+			</div>
+
+			<div class="entry panel padded">
+				<h2>Project Katana</h2>
+				<p>Category: <strong>2025 Godot Desktop/Console Games</strong></p>
+				<p>Author: <strong>John Doe</strong></p>
+				<p>Your vote: <strong>No 👎</strong></p>
+				<div style="margin-top: 10px;">
+					<a class="button dim small" href="/vote/18">Edit vote</a>
+				</div>
+			</div>
+
+			<div class="entry panel padded">
+				<h2>Space Adventure</h2>
+				<p>Category: <strong>2025 Godot Desktop/Console Games</strong></p>
+				<p>Author: <strong>Jane Smith</strong></p>
+				<p>Your vote: <strong>Skip ⏭️</strong></p>
+				<div style="margin-top: 10px;">
+					<a class="button dim small" href="/vote/25">Edit vote</a>
+				</div>
+			</div>
+
+			
+		</div>
+</div>
+</main>

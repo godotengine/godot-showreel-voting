@@ -14,7 +14,10 @@ def about():
 
 @app.route('/vote')
 def vote():
-	data = {
+	# Every time you visit this page, it should load a new entry
+	# You should add an option argument allowing to load a specific entry to overwrite the vote
+	
+	data = { # I hardcoded an example for the entry:
 		'game': 'Brotato',
 		'author': 'Blobfish Games',
 		'follow_me_link': 'https://twitter.com/BlobfishGames',
@@ -37,7 +40,11 @@ def vote():
 
 @app.route('/history')
 def history():
-	content = render_template('history.html')
+	progress = {
+		'total': 310, # How many entries in total
+		'current': 42, # How many entries has the user rated so far
+	}
+	content = render_template('history.html', progress=progress)
 	return render_template('default.html', content = content)
 
 if __name__ == '__main__':
