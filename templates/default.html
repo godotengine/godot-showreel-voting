@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="{% if description %}{{ description }}{% else %}Godot's annual showreel voting platform.{% endif %}">
+	<title>{% if title %}{{ title }} - {% endif %}Godot Showreel Voting</title>
+	<link rel="icon" href="https://store-beta.godotengine.org/static/favicon.svg" type="image/svg+xml">
+	<link rel="stylesheet" href="https://store-beta.godotengine.org/static/base.css">
+	<link rel="stylesheet" href="https://store-beta.godotengine.org/static/style/main.css">
+	<link rel="stylesheet" href="https://store-beta.godotengine.org/static/style/nav.css">
+	<link rel="stylesheet" href="https://store-beta.godotengine.org/static/style/asset-dashboard.css">
+	<link rel="stylesheet" href="https://store-beta.godotengine.org/static/style/asset-item.css">
+	<link rel="stylesheet" href="https://store-beta.godotengine.org/static/style/generic-form.css">
+	<link rel="stylesheet" href="https://store-beta.godotengine.org/static/style/popup.css">
+	<link rel="stylesheet" href="https://store-beta.godotengine.org/static/style/tags.css">
+	<link rel="stylesheet" href="https://store-beta.godotengine.org/static/style/page/library.css">
+	<link rel="stylesheet" href="https://store-beta.godotengine.org/static/style/code-hilite.css">
+	<script src="https://unpkg.com/htmx.org@1.9.12"></script>
+	<script src="https://store-beta.godotengine.org/static/js/tiny-slider.js"></script>
+	<meta property="og:site_name" content="Godot Showreel Voting">
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="{% if title %}{{ title }} - {% endif %}Godot Showreel Voting">
+	<meta property="og:description" content="{% if description %}{{ description }}{% else %}Godot's annual showreel voting platform.{% endif %}">
+	<meta property="og:image" content="{% if thumbnail %}{{ storage.backend.url_for(thumbnail) }}{% else %}/static/images/share-image.webp{% endif %}">
+	<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body>
+	<noscript style="display: block; margin-top: 68px; background-color: #f8d7da; color: #721c24; padding: 1rem; margin-bottom: -68px; text-align: center;">
+		<p>JavaScript is disabled in your browser. Some features of this site may not work properly.</p>
+	</noscript>
+	{% import "macros.html" as macros %}
+	{{ macros.nav(user) }}
+	{{ content | safe }}
+	{{ macros.footer() }}
+	<script src="/static/main.js"></script>
+</body>
+
+</html>

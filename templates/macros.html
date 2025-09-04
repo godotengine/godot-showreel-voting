@@ -1,0 +1,71 @@
+{% macro nav(user) %}
+<div class="nav-gap"></div>
+<nav>
+	<div class="wrapper">
+		<a href="/">
+			<img class="logo" src="/static/images/nav-logo.svg" alt="Godot Showreel Voting">
+		</a>
+		<!-- search bar -->
+		<div style="height: 58px;"></div>
+		<!-- navigation links -->
+		<div class="navigation-links">
+			<a class="desktop" href="/about">About</a>
+			{% if user %}
+			<a class="desktop" href="/">My Library</a>
+			<div class="dropdown">
+				<a href="#" class="dd-button-view" onclick="document.getElementById('dropdown-menu').classList.toggle('show'); event.preventDefault();">
+					<img src="https://www.gravatar.com/avatar/{{ user.gravatar_hash }}?d=retro" alt="User" title="{{ user.name }}" class="user-icon gravatar">
+				</a>
+				<div id="dropdown-menu" class="dropdown-content">
+					<a href="/">{{ user.name }}</a>
+					<hr>
+					<a class="mobile" href="/about">About</a>
+					<hr class="mobile">
+					{% if user.moderator %}
+						<a href="/">Queue</a>
+						<a href="/">Administration</a>
+						<hr>
+					{% endif %}
+
+					<a href="/">My Library</a>
+					<a href="/">My Uploads</a>
+					<a href="/">Settings</a>
+					<a href="/" >Support</a>
+					<hr>
+					<a href="/">Logout</a>
+				</div>
+			</div>
+			{% else %}
+			<div class="dropdown">
+				<a href="/" class="dd-button-view logged-out">
+					<p class="desktop">Log in</p>
+					<img src="https://store-beta.godotengine.org/static/images/user.svg" alt="User" class="user-icon">
+				</a>
+			</div>
+			{% endif %}
+			<script>
+				// Close the dropdown if the user clicks outside of it
+				window.onclick = function(event) {
+					if (!event.target.closest('.dd-button-view')) {
+						var dropdowns = document.getElementsByClassName("dropdown-content");
+						for (var i = 0; i < dropdowns.length; i++) {
+							var openDropdown = dropdowns[i];
+							if (openDropdown.classList.contains('show')) {
+								openDropdown.classList.remove('show');
+							}
+						}
+					}
+				}
+			</script>
+		</div>
+	</div>
+</nav>
+{% endmacro %}
+
+{% macro footer() %}
+<footer>
+	<p>If you found any issue or if you have a suggestion, please create an issue in our <a href="https://github.com/godotengine/godot-showreel-voting/issues">issue tracker</a>.</p>
+	<br>
+	<p>&copy; 2025 - Godot Showreel Voting by <a href="https://godot.foundation">Godot Foundation</a></p>
+</footer>
+{% endmacro %}

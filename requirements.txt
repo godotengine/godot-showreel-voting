@@ -1,4 +1,0 @@
-django==3.2.*
-python-dotenv
-mysqlclient
-mozilla-django-oidc

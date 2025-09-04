@@ -1,10 +1,21 @@
-{% extends 'base.html' %}
+<style>
+    main {
+        max-width: 990px;
+        margin: 20px auto;
+        background-color: #7d7d7d1c;
+        padding: 20px;
+        border-radius: 15px;
+    }
+    section {
+        margin: 40px 0px;
+    }
+    h2 {
+        margin-top: 1em;
+        margin-bottom: 0.5em;
+    }
+</style>
 
-{% block title %}
-About this website
-{% endblock %}
-
-{% block content %}
+<main>
 <p>
     The Godot Engine showreel website is a platform to help with the submissions and voting of videos for the annual showreels. Each showreel is a roughly 5 minutes-long video featuring a set of games and tools that highlight the capabilities of Godot Engine. You can see the full list of past showreels on this <a href="https://youtube.com/playlist?list=PLeG_dAglpVo6EpaO9A1nkwJZOwrfiLdQ8">YouTube playlist</a>.
 </p>
@@ -13,7 +24,7 @@ About this website
     Users can submit their videos for one of the categories (desktop, mobile, or tools), and maintainers + <a href="https://fund.godotengine.org">development fund members</a> will be able to cast votes on each entry. During the voting process, scores will be hidden and videos will be presented in a random order to avoid any bias. After the voting phase ends, the video editors will use the highest-rated entries together with some current popular games selected by the <a href="https://godot.foundation">Godot Foundation</a> for the final showreels. The selection stages and deadlines are announced <a href="https://godotengine.org/blog/">on our blog</a>.
 </p>
 
-<h3 id="requirements-and-recommendations">Submission requirements:</h3>
+<h2 id="requirements-and-recommendations">Submission requirements:</h2>
 <p>
     When submitting your video, please make sure to ensure that these requirements are met. We withold the right to disqualify submissions that do not follow the rules.
 </p>
@@ -36,9 +47,9 @@ About this website
     Don't worry about not having a perfect video! If your game is selected, we may contact you to discuss the video content and give you a chance to improve your submission for the final edit, so please provide with an up to date contact in the submission form.
 </p>
 
-<h3 id="how-to">How can I make a submission?</h3>
+<h2 id="how-to">How can I make a submission?</h2>
 <p>
-    To submit your video, go to <a href="{% url 'submissions' %}">your submissions</a> and click on the "New submission" button (it will be disabled if there is no currently opened showreel).
+    To submit your video, go to <a href="/submissions">your submissions</a> and click on the "New submission" button (it will be disabled if there is no currently opened showreel).
     Select the showreel category you want to submit a video to, then fill in the fields with your game's title and a link to your video. You can add a link where interested viewers can follow the progress of your game (e.g. your website, a linktree, one social media account, etc.).
     This link will be added in the description of the showreel's video.
 </p>
@@ -52,21 +63,14 @@ About this website
     If you are participating in the review, be informed that you will <em>not</em> be able to see your own video in the vote page, as a user cannot vote for their own proposals.
 </p>
 
-<h3 id="contact_us">Contact us</h3>
+<h2 id="contact_us">Contact us</h2>
+<p>You can contact the showreel administrators via our email address <a href="mailto:contact@godotengine.org">contact@godotengine.org</a>. Make sure to include your details so we can resolve any potential issue faster.</p>
 
-<p>
-    You can contact the showreel administrators via our email address <a href="mailto:contact@godotengine.org">contact@godotengine.org</a>. Make sure to include your details so we can resolve any potential issue faster.
-</p>
+<h2>License</h2>
+<p>Kindly ensure that you are the rights-holder to all content you submit. We will only use your submission for the purpose of creating the previously described showreel video, which will be shared across official Godot Engine channels.</p>
+<p>This website's code, built with Flask, is freely available on <a href="https://github.com/groud/godot-showreel-voting">GitHub</a> under the MIT license.</p>
 
-<h3>License</h3>
-<p>
-    Kindly ensure that you are the rights-holder to all content you submit. We will only use your submission for the purpose of creating the previously described showreel video, which will be shared across official Godot Engine channels.
-<p>
-    This website's code, built with Django, is freely available on <a href="https://github.com/groud/godot-showreel-voting">GitHub</a> under the MIT license.
-    It uses several icons provided by <a href="https://fontawesome.com/">Font Awesome</a> under the CC BY 4.0 license.
-</p>
-
-<h3>Personal data</h3>
+<h2>Personal data</h2>
 <p>
     To run this website, we store the following data:
 </p>
@@ -80,4 +84,4 @@ About this website
     For any request regarding the data associated with your account, please <a href="#contact_us">contact us</a>.
 </p>
 
-{% endblock %}
+</main>
