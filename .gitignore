@@ -13,3 +13,6 @@ static/
 
 # Ignore the config file as it may contain secrets
 .env
+
+# db files
+instance/
