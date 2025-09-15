@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, g, render_template
 
 
 bp = Blueprint('board', __name__)
@@ -7,7 +7,7 @@ bp = Blueprint('board', __name__)
 @bp.route('/')
 def home():
 	content = render_template('home.html')
-	return render_template('default.html', content = content)
+	return render_template('default.html', content = content, user=g.user)
 
 
 @bp.route('/about')

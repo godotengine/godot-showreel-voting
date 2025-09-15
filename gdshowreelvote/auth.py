@@ -57,7 +57,7 @@ def mock_auth():
     }
     user = DB.session.get(User, oidc_info['sub'])
     if not user:
-        user = User(id=oidc_info['sub'], name=oidc_info['name'], email=oidc_info['email'], moderator=moderator)
+        user = User(id=oidc_info['sub'], username=oidc_info['name'], email=oidc_info['email'], is_staff=moderator)
         DB.session.add(user)
         DB.session.commit()
     

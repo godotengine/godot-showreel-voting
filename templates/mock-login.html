@@ -1,0 +1,10 @@
+<main class="catalog" style="max-width: 230px; text-align: center; padding-top: 70px; padding-bottom: 120px;">
+    <h2 class="section-title">Mock Login</h2>
+	<form method="POST" action="{{ url_for('oidc.auth') }}">
+        {% for user in users %}
+            <button class="button secondary" style="display: block; width: 100%; cursor: pointer;" type="submit" value="{{ user }}" name="username">
+                {{ user | capitalize }}
+            </button>
+        {% endfor %}
+    </form>
+</main>
