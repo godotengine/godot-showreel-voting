@@ -47,7 +47,7 @@ class User(DB.Model):
 class Showreel(DB.Model):
     __tablename__ = "showreels"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     status: Mapped[ShowreelStatus] = mapped_column(Enum(ShowreelStatus), default=ShowreelStatus.CLOSED, nullable=False)
     title: Mapped[str] = mapped_column(String(200), nullable=False)
 
@@ -57,7 +57,7 @@ class Showreel(DB.Model):
 class Video(DB.Model):
     __tablename__ = "videos"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     showreel_id: Mapped[int] = mapped_column(Integer, ForeignKey("showreels.id"), nullable=False)
     author_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
 
@@ -77,7 +77,7 @@ class Video(DB.Model):
 class Vote(DB.Model):
     __tablename__ = "votes"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
     video_id: Mapped[int] = mapped_column(Integer, ForeignKey("videos.id"), nullable=False)
 
