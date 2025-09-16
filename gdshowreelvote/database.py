@@ -58,7 +58,7 @@ class Video(DB.Model):
     __tablename__ = "videos"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    showreel_id: Mapped[int] = mapped_column(Integer, ForeignKey("showreels.id"), nullable=False)
+    showreel_id: Mapped[int] = mapped_column(Integer, ForeignKey("showreels.id"), nullable=True)
     author_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
 
     game: Mapped[str] = mapped_column(String(200), nullable=False, default="")
