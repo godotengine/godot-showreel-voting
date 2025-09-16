@@ -1,11 +1,11 @@
 from datetime import timedelta
 import hashlib
 from http.client import HTTPException
-from flask import Flask, g, render_template, session
+from flask import Flask, current_app, g, render_template, session
 
 from gdshowreelvote import auth
 from gdshowreelvote.blueprints.votes import bp as votes_bp
-from gdshowreelvote.database import DB, User, migrate
+from gdshowreelvote.database import DB, Showreel, ShowreelStatus, User, Video, migrate
 
 def create_app(config=None):
     # ------------------------------------------------
@@ -46,7 +46,7 @@ def create_app(config=None):
                 g.user = user
             else:
                 name = oidc_info.get('name', oidc_info.get('preferred_username', ''))
-                g.user = User(id=oidc_info['sub'], name=name, email=oidc_info['email'])
+                g.user = User(id=oidc_info['sub'], username=name, email=oidc_info['email'])
                 DB.session.add(g.user)
                 DB.session.commit()
             # Calculate Gravatar hash
@@ -67,6 +67,57 @@ def create_app(config=None):
     # ------------------------------------------------
     # Commands
     # ------------------------------------------------
+
+    @app.cli.command('create-sample-data')
+    def create_sample_data():
+        # Reset state
+        DB.session.query(Showreel).delete()
+        DB.session.commit()
+        DB.session.query(User).filter(User.email == 'author@example.com').delete()
+        DB.session.commit()
+        DB.session.query(Video).delete()
+        DB.session.commit()
+        # Create showreel
+        showreel = Showreel(status=ShowreelStatus.VOTE, title='2025 Godot Desktop/Console Games')
+        DB.session.add(showreel)
+        DB.session.commit()
+        # Create author of videos
+        author = User(id='sample-author-id', email='author@example.com', username='Sample Author')
+        DB.session.add(author)
+        DB.session.commit()
+
+        # Create sample video entries
+        video_data = [{
+            'game': 'Brotato',
+            'author_name': 'Blobfish Games',
+            'follow_me_link': 'https://twitter.com/BlobfishGames',
+            'category': '2025 Godot Desktop/Console Games',
+            'video_link': 'https://www.youtube.com/watch?v=nfceZHR7Yq0',
+            'video_download_link': 'https://www.youtube.com/watch?v=nfceZHR7Yq0',
+            'store_link': 'https://store.steampowered.com/app/1592190/Brotato/',
+        },
+        {'game': 'Vampire Survivors',
+            'author_name': 'Blobfish Games',
+            'follow_me_link': 'https://twitter.com/BlobfishGames',
+            'category': '2025 Godot Desktop/Console Games',
+            'video_link': 'https://www.youtube.com/watch?v=6HXNxWbRgsg',
+            'video_download_link': 'https://www.youtube.com/watch?v=6HXNxWbRgsg',
+            'store_link': 'https://store.steampowered.com/app/1592190/Brotato/',
+        },
+        ]
+        for video in video_data:
+            video = Video(game=video['game'],
+                          author_name=video['author_name'],
+                          follow_me_link=video['follow_me_link'],
+                          video_link=video['video_link'],
+                          video_download_link=video['video_download_link'],
+                          store_link=video['store_link'],
+                          author=author,
+                          showreel=showreel)
+            DB.session.add(video)
+            DB.session.commit()
+
+            current_app.logger.info(f'Created sample video entry: {video.game} (ID: {video.id})')
 
 
     # @app.cli.command('search-users')
