@@ -1,7 +1,8 @@
 from flask import Blueprint, current_app, g, render_template, request
 
+from gdshowreelvote import auth
 from gdshowreelvote.blueprints.forms import VOTE_ACTIONS, CastVoteForm, SelectVideoForm
-from gdshowreelvote.database import DB, Video
+from gdshowreelvote.database import DB, Video, Vote
 from gdshowreelvote.utils import choose_random_video, vote_data
 
 
@@ -22,6 +23,7 @@ def about():
 
 @bp.route('/vote', methods=['GET'])
 @bp.route('/vote/<int:video_id>', methods=['GET'])
+@auth.login_required
 def vote_get(video_id=None):
 	if video_id:
 		video = DB.session.query(Video).filter(Video.id == video_id).first()
@@ -38,6 +40,7 @@ def vote_get(video_id=None):
 
 
 @bp.route('/vote', methods=['POST'])
+@auth.login_required
 def vote():
 	cast_vote_form = CastVoteForm()
 	select_specific_video_form = SelectVideoForm()
@@ -62,10 +65,16 @@ def vote():
 
 
 @bp.route('/history')
+@auth.login_required
 def history():
+	total_video_count = DB.session.query(Video).count()
+	total_user_votes = DB.session.query(Vote).filter(Vote.user_id == g.user.id).count()
 	progress = {
-		'total': 310, # How many entries in total
-		'current': 42, # How many entries has the user rated so far
+		'total': total_video_count,
+		'current': total_user_votes,
 	}
-	content = render_template('history.html', progress=progress)
+	submitted_votes = DB.session.query(Vote).filter(Vote.user_id == g.user.id).all()
+
+	#  We probably want to add pagination here
+	content = render_template('history.html', progress=progress, submitted_votes=submitted_votes)
 	return render_template('default.html', content = content)

@@ -23,9 +23,9 @@ def choose_random_video(user: User, skip_videos: List[int]=[]) -> Video:
 
 def upvote_video(user: User, video: Video):
     """ Cast an upvote for a video by a user. """
-    existing_vote = DB.session.query(Vote).filter(and_(Vote.user_id == user.id, Vote.video_id == video.id)).first()
-    if existing_vote:
-        existing_vote.rating = 1
+    vote = DB.session.query(Vote).filter(and_(Vote.user_id == user.id, Vote.video_id == video.id)).first()
+    if vote:
+        vote.rating = 1
     else:
         vote = Vote(user_id=user.id, video_id=video.id, rating=1)
         DB.session.add(vote)
@@ -35,9 +35,9 @@ def upvote_video(user: User, video: Video):
 
 def downvote_video(user: User, video: Video):
     """ Cast a downvote for a video by a user. """
-    existing_vote = DB.session.query(Vote).filter(and_(Vote.user_id == user.id, Vote.video_id == video.id)).first()
-    if existing_vote:
-        existing_vote.rating = -1
+    vote = DB.session.query(Vote).filter(and_(Vote.user_id == user.id, Vote.video_id == video.id)).first()
+    if vote:
+        vote.rating = -1
     else:
         vote = Vote(user_id=user.id, video_id=video.id, rating=-1)
         DB.session.add(vote)
@@ -53,6 +53,7 @@ def _video_data(video: Video) -> Dict:
             'follow_me_link': video.follow_me_link,
             'video_link': video.video_link,
             'store_link': video.store_link,
+            'category': video.showreel.title,
         }
         # TODO: Need to make sure we extract the YouTube ID correctly
     youtube_id = video.video_link.split('v=')[-1]

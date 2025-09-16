@@ -15,42 +15,29 @@
 <main>
 <h1 style="margin-bottom: 20px;">Vote history</h1>
 <div class="">
-		<p>You have voted {{ progress.current }} out of {{ progress.total }} entries. <a href="/vote">Continue voting</a>.</p>
+		<p>You have voted {{ progress.current }} out of {{ progress.total }} entries. {% if progress.current != progress.total %}<a href="/vote">Continue voting</a>.{% endif %}</p>
 
 		<div class="entries">
 			<!-- Items should be sorted by what you Voted last in chronological order -->
 			<!-- This should be a loop -->
-			<div class="entry panel padded">
-				<h2>Brotato</h2>
-				<p>Category: <strong>2025 Godot Desktop/Console Games</strong></p>
-				<p>Author: <strong>Blobfish Games</strong></p>
-				<p>Your vote: <strong>Yes 👍</strong></p>
-				<div style="margin-top: 10px;">
-					<a class="button dim small" href="/vote/22">Edit vote</a>
-				</div>	
-			</div>
-
-			<div class="entry panel padded">
-				<h2>Project Katana</h2>
-				<p>Category: <strong>2025 Godot Desktop/Console Games</strong></p>
-				<p>Author: <strong>John Doe</strong></p>
-				<p>Your vote: <strong>No 👎</strong></p>
-				<div style="margin-top: 10px;">
-					<a class="button dim small" href="/vote/18">Edit vote</a>
+			{% for entry in submitted_votes %}
+				<div class="entry panel padded">
+					<h2>{{ entry.video.game }}</h2>
+					<p>Category: <strong>{{ entry.video.showreel.title }}</strong></p>
+					<p>Author: <strong>{{ entry.video.author_name }}</strong></p>
+					{% if entry.rating == 1 %}
+						<p>Your vote: <strong>Yes 👍</strong></p>
+					{% elif entry.rating == -1 %}
+						<p>Your vote: <strong>No 👎</strong></p>
+					{% else %}
+						<!-- This should not happen -->
+						<p>Your vote: <strong>Skip ⏭️</strong></p>
+					{% endif %}
+					<div style="margin-top: 10px;">
+						<a class="button dim small" href="/vote/{{entry.id}}">Edit vote</a>
+					</div>	
 				</div>
-			</div>
-
-			<div class="entry panel padded">
-				<h2>Space Adventure</h2>
-				<p>Category: <strong>2025 Godot Desktop/Console Games</strong></p>
-				<p>Author: <strong>Jane Smith</strong></p>
-				<p>Your vote: <strong>Skip ⏭️</strong></p>
-				<div style="margin-top: 10px;">
-					<a class="button dim small" href="/vote/25">Edit vote</a>
-				</div>
-			</div>
-
-			
+			{% endfor %}
 		</div>
 </div>
 </main>
