@@ -5,7 +5,7 @@ from flask import Flask, current_app, g, render_template, session
 
 from gdshowreelvote import auth
 from gdshowreelvote.blueprints.votes import bp as votes_bp
-from gdshowreelvote.database import DB, Showreel, ShowreelStatus, User, Video, migrate
+from gdshowreelvote.database import DB, Showreel, ShowreelStatus, User, Video, Vote, migrate
 
 def create_app(config=None):
     # ------------------------------------------------
@@ -74,6 +74,8 @@ def create_app(config=None):
         DB.session.query(Showreel).delete()
         DB.session.commit()
         DB.session.query(User).filter(User.email == 'author@example.com').delete()
+        DB.session.commit()
+        DB.session.query(Vote).delete()
         DB.session.commit()
         DB.session.query(Video).delete()
         DB.session.commit()
