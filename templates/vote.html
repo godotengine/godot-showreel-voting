@@ -11,10 +11,25 @@
 		grid-template-columns: 1fr 1fr;
 		margin: 20px 0px;
 	}
+	.thank-you {
+		font-size: 1.3em;
+		padding: 41px 50px;
+		text-align: left;
+		/* max-width: 600px; */
+		margin: 0 auto;
+		h1 {
+			margin-bottom: 10px;
+		}
+	}
 </style>
 <main id="vote-view">
 	{% if not data %}
-			<h2>No more videos to vote on. Please check back later.</h2>
+		<div class="thank-you panel">
+			<h1>Thank you for participating!</h1>
+			<p>You already voted on all the submitted projects.</p>
+			<p>After the voting period ends, we will work on making the video.</p>
+			<p>If you want to revisit your votes, review them <a href="/history">here</a>.</p>
+		</div>
 	{% else %}
 		<div class="col-2">
 			<h1>Submission: {{ data.game }}</h1>
