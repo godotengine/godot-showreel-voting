@@ -15,4 +15,5 @@ static/
 .env
 
 # db files
-instance/
+instance/*
+!instance/example-config.py

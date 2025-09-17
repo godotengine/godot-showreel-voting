@@ -70,13 +70,14 @@ def create_app(config=None):
 
     @app.cli.command('create-sample-data')
     def create_sample_data():
+        if current_app.config['ENV'] != 'dev':
+            print('Sample data can only be created in development environment.')
+            return
+        print('Creating sample data...')
         # Reset state
         DB.session.query(Showreel).delete()
-        DB.session.commit()
         DB.session.query(User).filter(User.email == 'author@example.com').delete()
-        DB.session.commit()
         DB.session.query(Vote).delete()
-        DB.session.commit()
         DB.session.query(Video).delete()
         DB.session.commit()
         # Create showreel
@@ -119,7 +120,7 @@ def create_app(config=None):
             DB.session.add(video)
             DB.session.commit()
 
-            current_app.logger.info(f'Created sample video entry: {video.game} (ID: {video.id})')
+            print(f'Created sample video entry: {video.game} (ID: {video.id})')
 
 
     # @app.cli.command('search-users')

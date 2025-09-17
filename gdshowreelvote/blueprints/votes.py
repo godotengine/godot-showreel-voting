@@ -77,4 +77,4 @@ def history():
 
 	#  We probably want to add pagination here
 	content = render_template('history.html', progress=progress, submitted_votes=submitted_votes)
-	return render_template('default.html', content = content)
+	return render_template('default.html', content = content, user=g.user)
