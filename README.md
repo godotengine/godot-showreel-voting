@@ -22,6 +22,8 @@ The following functionality is implemented:
 
 For this project I'm trying [uv](https://docs.astral.sh/uv/),a python project manager. The idea is that this tool should replace the need for virtualenvironments and package managers with a a single one.
 
+Configuration is fetched from a config file located in `./instance/config.py`. [An example configuration](instance/example-config.py) is provided with everything setup for local development
+
 ### Quickstart
 
 Install `uv`: https://docs.astral.sh/uv/#installation

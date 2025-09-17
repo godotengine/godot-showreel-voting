@@ -19,8 +19,8 @@
 						<a href="/">{{ user.username }}</a>
 						<a class="mobile" href="/about">About</a>
 						<hr class="mobile">
-						{% if user.is_stafff %}
-							<a href="/">Administration</a>
+						{% if user.is_staff %}
+							<a href="/admin">Administration</a>
 							<hr>
 						{% endif %}
 						<hr>

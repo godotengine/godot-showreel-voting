@@ -73,3 +73,19 @@ def vote_data(user: User, video: Video) -> Tuple[Dict, Dict]:
 	}
     
     return data, progress
+
+
+def get_total_votes() -> List[Tuple[Video, int, int]]:
+    results = (
+        DB.session.query(
+            Video,
+            func.coalesce(func.sum(Vote.rating), 0).label("vote_sum"),
+            func.count(Vote.id).label("vote_count"),
+        )
+        .outerjoin(Vote, Vote.video_id == Video.id)
+        .group_by(Video.id)
+        .order_by(func.coalesce(func.sum(Vote.rating), 0).desc())
+        .all()
+    )
+
+    return results

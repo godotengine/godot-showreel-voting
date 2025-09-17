@@ -27,6 +27,16 @@ def login_required(f):
     return decorated_func
 
 
+def admin_required(f):
+    @wraps(f)
+    def decorated_func(*args, **kwargs):
+        if session.get('user') and session['user'].get('is_staff', False):
+            return f(*args, **kwargs)
+        else:
+            return redirect(url_for('oidc.login'))
+    return decorated_func
+
+
 def get_issuer():
     if current_app.config.get('OIDC_MOCK', False):
         return 'https://example.org/keycloak/realms/test'
@@ -53,11 +63,12 @@ def mock_auth():
         'preferred_username': username,
         'given_name': username.capitalize(),
         'family_name': username.capitalize(),
-        'email': f'{username}@example.com'
+        'email': f'{username}@example.com',
+        'is_staff': moderator,
     }
     user = DB.session.get(User, oidc_info['sub'])
     if not user:
-        user = User(id=oidc_info['sub'], username=oidc_info['name'], email=oidc_info['email'], is_staff=moderator)
+        user = User(id=oidc_info['sub'], username=oidc_info['name'], email=oidc_info['email'], is_staff=oidc_info['is_staff'])
         DB.session.add(user)
         DB.session.commit()
     
