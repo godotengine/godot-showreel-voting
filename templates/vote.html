@@ -46,9 +46,9 @@
 					<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
 						{{ cast_vote_form.csrf_token }}
 						{{ cast_vote_form.video_id(value=data.id, hidden=True) }}
-						<button type="submit" name="action" value="downvote" class="button">No 👎</button>
-						<button type="submit" name="action" value="skip" class="button">Skip ⏭️</button>
-						<button type="submit" name="action" value="upvote" class="button">Yes 👍</button>
+						<button type="submit" name="action" value="downvote" class="button tertiary">No 👎</button>
+						<button type="submit" name="action" value="skip" class="button dim">Skip ⏭️</button>
+						<button type="submit" name="action" value="upvote" class="button primary">Yes 👍</button>
 					</div>
 				</form>
 			</div>
