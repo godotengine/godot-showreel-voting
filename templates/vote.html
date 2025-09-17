@@ -42,15 +42,17 @@
 			<iframe width="560" height="315" src="{{ data.youtube_embed }}?rel=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 			<div class="panel padded">
 				<h2 style="margin-bottom: 10px; text-align: center;">Should this submission be included in the next showreel?</h2>
+				<form method="POST" enctype="multipart/form-data" hx-post="{{ url_for("votes.vote", _method='POST') }}" hx-target='#vote-view' hx-swap='outerHTML'></form>
 				<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-					<form method="POST" enctype="multipart/form-data" hx-post="{{ url_for("votes.vote", _method='POST') }}" hx-target='#vote-view' hx-swap='outerHTML'>
-						{{ cast_vote_form.csrf_token }}
-						{{ cast_vote_form.video_id(value=data.id, hidden=True) }}
-						<button type="submit" name="action" value="downvote" class="button">No 👎</button>
-						<button type="submit" name="action" value="skip" class="button">Skip ⏭️</button>
-						<button type="submit" name="action" value="upvote" class="button">Yes 👍</button>
-					</form>
+				
+					{{ cast_vote_form.csrf_token }}
+					{{ cast_vote_form.video_id(value=data.id, hidden=True) }}
+					<button type="submit" name="action" value="downvote" class="button">No 👎</button>
+					<button type="submit" name="action" value="skip" class="button">Skip ⏭️</button>
+					<button type="submit" name="action" value="upvote" class="button">Yes 👍</button>
+
 				</div>
+									</form>
 			</div>
 			
 			<div class="panel padded" style="margin-top: 10px;">

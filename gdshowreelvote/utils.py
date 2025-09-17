@@ -69,7 +69,7 @@ def vote_data(user: User, video: Video) -> Tuple[Dict, Dict]:
 
     progress = {
 		'total': total_video_count, 
-		'current': total_user_votes + 1,
+		'current': total_user_votes,
 	}
     
     return data, progress
