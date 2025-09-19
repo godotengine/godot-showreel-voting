@@ -1,3 +1,5 @@
+from werkzeug.exceptions import NotFound
+
 from flask import Blueprint, current_app, g, render_template, request
 
 from gdshowreelvote import auth
@@ -67,23 +69,35 @@ def vote():
 @bp.route('/history')
 @auth.login_required
 def history():
+	page = int(request.args.get('page', 1))
 	total_video_count = DB.session.query(Video).count()
 	total_user_votes = DB.session.query(Vote).filter(Vote.user_id == g.user.id).count()
 	progress = {
 		'total': total_video_count,
 		'current': total_user_votes,
 	}
-	submitted_votes = DB.session.query(Vote).filter(Vote.user_id == g.user.id).order_by(Vote.created_at.desc()).all()
+	query = DB.session.query(Vote).filter(Vote.user_id == g.user.id).order_by(Vote.created_at.desc())
+
+	try:
+		submitted_votes = DB.paginate(query, page=page, per_page=30)
+	except NotFound:
+		submitted_votes = DB.paginate(query, page=1, per_page=30)
+
 
 	#  We probably want to add pagination here
 	content = render_template('history.html', progress=progress, submitted_votes=submitted_votes)
+	if request.args.get('page'):
+		return content
 	return render_template('default.html', content = content, user=g.user)
 
 
 @bp.route('/admin')
 @auth.admin_required
 def admin_view():
-	vote_tally = get_total_votes()
+	page = int(request.args.get('page', 1))
+	vote_tally = get_total_votes(page)
 
 	content = render_template('admin.html', vote_tally=vote_tally)
+	if request.args.get('page'):
+		return content
 	return render_template('default.html', content = content, user=g.user)

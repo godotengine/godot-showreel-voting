@@ -12,15 +12,15 @@
 		grid-template-columns: 1fr;
 	}
 </style>
-<main>
-<h1 style="margin-bottom: 20px;">Vote history</h1>
-<div class="">
+<main id="history">
+	<h1 style="margin-bottom: 20px;">Vote history</h1>
+	<div>
 		<p>You have voted {{ progress.current }} out of {{ progress.total }} entries. {% if progress.current != progress.total %}<a href="/vote">Continue voting</a>.{% endif %}</p>
 
 		<div class="entries">
 			<!-- Items should be sorted by what you Voted last in chronological order -->
 			<!-- This should be a loop -->
-			{% for entry in submitted_votes %}
+			{% for entry in submitted_votes.items %}
 				<div class="entry panel padded">
 					<h2>{{ entry.video.game }}</h2>
 					<p>Category: <strong>{{ entry.video.showreel.title }}</strong></p>
@@ -39,5 +39,8 @@
 				</div>
 			{% endfor %}
 		</div>
-</div>
+		{% with elements=submitted_votes, request_url="votes.history", hx_target="#history", strategy="outerHTML" %}
+			{% include "pagination.html" with context %}
+		{% endwith %}
+	</div>
 </main>

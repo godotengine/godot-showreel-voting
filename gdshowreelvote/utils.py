@@ -1,3 +1,5 @@
+from werkzeug.exceptions import NotFound
+
 from typing import Dict, List, Tuple
 from sqlalchemy import and_, func
 from gdshowreelvote.database import DB, Showreel, ShowreelStatus, User, Video, Vote
@@ -75,8 +77,8 @@ def vote_data(user: User, video: Video) -> Tuple[Dict, Dict]:
     return data, progress
 
 
-def get_total_votes() -> List[Tuple[Video, int, int]]:
-    results = (
+def get_total_votes(page: int) -> List[Tuple[Video, int, int]]:
+    query = (
         DB.session.query(
             Video,
             func.coalesce(func.sum(Vote.rating), 0).label("vote_sum"),
@@ -85,7 +87,11 @@ def get_total_votes() -> List[Tuple[Video, int, int]]:
         .outerjoin(Vote, Vote.video_id == Video.id)
         .group_by(Video.id)
         .order_by(func.coalesce(func.sum(Vote.rating), 0).desc())
-        .all()
     )
+
+    try:
+        results = query.paginate(page=page, per_page=30)
+    except NotFound:
+        results = query.paginate(page=1, per_page=30)
 
     return results

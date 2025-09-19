@@ -1,0 +1,45 @@
+<style>
+    .pagination {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .pagination .button.current {
+        cursor: initial;
+        color: #409bff;
+    }
+    @media (prefers-color-scheme: light) {
+        .pagination .button.dim {
+            background: white;
+            color: inherit;
+        }
+        .pagination .button:disabled {
+            background: #f0f0f0;
+            color: #999;
+        }
+    }
+</style>
+
+{% if elements.pages > 1 %}
+    <div class="pagination">
+        Page:
+        {% for page in elements.iter_pages() %}
+            {% if page %}
+                {% if page != elements.page %}
+                    <button
+                        class="button small dim"
+                        type="button"
+                        hx-get="{{ url_for(request_url, page=page) }}"
+                        hx-target="{{ hx_target }}"
+                        hx-swap="{{ strategy }} show:window:top"
+                    >
+                        {{ page }}
+                    </button>
+                {% else %}
+                    <button class="button small current" disabled>{{ page }}</button>
+                {% endif %}
+            {% else %}
+                <span class="ellipsis">…</span>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
