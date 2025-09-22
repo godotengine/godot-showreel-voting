@@ -1,6 +1,9 @@
+import csv
 from datetime import timedelta
 import hashlib
 from http.client import HTTPException
+import os
+import click
 from flask import Flask, current_app, g, render_template, session
 
 from gdshowreelvote import auth
@@ -122,20 +125,37 @@ def create_app(config=None):
 
             print(f'Created sample video entry: {video.game} (ID: {video.id})')
 
-
-    # @app.cli.command('search-users')
-    # @click.argument('name')
-    # def search_users(name):
-    #     for user in User.query.filter(User.name.like(f'%{name}%')).all():
-    #         print(f'{user.name}, {user.email} (ID: {user.id})')
+        return showreel, author
 
 
-    # @app.cli.command('make-moderator')
-    # @click.argument('user_id')
-    # def make_moderator(user_id):
-    #     user = User.query.get(user_id)
-    #     user.moderator = True
-    #     DB.session.commit()
+    @app.cli.command('load-data-from-csv')
+    @click.argument('file')
+    def load_data_from_csv(file):
+        showreel = DB.session.query(Showreel).first()
+        author = DB.session.query(User).filter(User.id == 'sample-author-id').first()
+        if not showreel or not author:
+            print('No showreel or user to attach videos to. Please execute "uv run flask --app main create-sample-data" and then try again.')
+            return
+
+        file_path = 'instance/sample.csv'
+        if file and os.path.isfile(file):
+            file_path = file
+        with open(file_path) as csvfile:
+            spamreader = csv.DictReader(csvfile, delimiter=',')
+            
+            for row in spamreader:
+                video = Video(game=row['Game'],
+                          author_name=row['Author'],
+                          follow_me_link=row['Follow-me link'],
+                          video_link=row['Video link'],
+                          video_download_link=row['Download link'],
+                          store_link=row['Store Link'],
+                          author=author,
+                          showreel=showreel)
+                DB.session.add(video)
+
+            DB.session.commit()
+            print(f'added {spamreader.line_num} videos')
     
     return app
 
