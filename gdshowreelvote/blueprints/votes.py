@@ -13,7 +13,7 @@ bp = Blueprint('votes', __name__)
 
 @bp.route('/')
 def home():
-	content = render_template('home.html')
+	content = render_template('home.html', user=g.user)
 	return render_template('default.html', content = content, user=g.user)
 
 
