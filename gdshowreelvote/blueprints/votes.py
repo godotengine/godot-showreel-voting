@@ -23,6 +23,11 @@ def about():
 	return render_template('default.html', content = content, user=g.user)
 
 
+@bp.route('/before-you-vote')
+def before_you_vote():
+	content = render_template('before-you-vote.html')
+	return render_template('default.html', content = content, user=g.user)
+
 @bp.route('/vote', methods=['GET'])
 @bp.route('/vote/<int:video_id>', methods=['GET'])
 @auth.login_required
