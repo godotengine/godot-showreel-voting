@@ -5,11 +5,16 @@
 		height: auto;
 		border-radius: 6px;
 	}
+	main {
+		margin-top: -10px;
+	}
 	.col-2 {
 		text-align: left;
 		display: grid;
-		grid-template-columns: 1fr 1fr;
 		margin: 20px 0px;
+		@media (min-width: 768px) {
+			grid-template-columns: 1fr 1fr;
+		}
 	}
 	.thank-you {
 		font-size: 1.3em;
@@ -19,6 +24,22 @@
 		margin: 0 auto;
 		h1 {
 			margin-bottom: 10px;
+		}
+	}
+	.progress {
+		@media (min-width: 768px) {
+			text-align: right;
+		}
+		a {
+			display: inline-block;
+			text-align: right;
+			font-size: 18px;
+			color: inherit;
+			opacity: 0.8;
+			text-decoration: none;
+		}
+		span {
+			display: block;
 		}
 	}
 </style>
@@ -34,7 +55,12 @@
 		<div class="col-2">
 			<h1>Submission: {{ data.game }}</h1>
 			<div style="display: grid; align-content: end;">
-				<a href="/history" style="text-align: right; font-size: 21px; color: inherit;">Progress: {{ progress.current }}/{{ progress.total }}</a>
+				<div class="progress">
+					<a href="/history">
+						<span>Progress: {{ progress.current }}/{{ progress.total }}</span>
+						<progress value="{{ progress.current }}" max="{{ progress.total }}" style="max-width: 190px; margin-right: 0; margin-left: auto;"></progress>
+					</a>
+				</div>
 			</div>
 		</div>
 
