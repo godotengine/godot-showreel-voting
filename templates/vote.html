@@ -39,7 +39,7 @@
 		</div>
 
 		<div >
-			<iframe width="560" height="315" src="{{ data.youtube_embed }}?rel=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+			<iframe width="560" height="315" src="{{ data.youtube_embed }}?rel=0&autoplay=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 			<div class="panel padded">
 				<h2 style="margin-bottom: 10px; text-align: center;">Should this submission be included in the next showreel?</h2>
 				<form method="POST" enctype="multipart/form-data" hx-post="{{ url_for("votes.vote", _method='POST') }}" hx-target='#vote-view' hx-swap='outerHTML'>
