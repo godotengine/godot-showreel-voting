@@ -2,7 +2,21 @@
 <h1>Index</h1>
 
 <p>About page ✅ <a href="/about">/about</a></p>
-<p>Vote page example (pending backend implementation): <a href="/vote">/vote</a></p>
+<p>Vote page example (pending backend implementation): <a href="#" id="vote-link">/vote</a></p>
 <p>Vote history example (pending backend implementation): <a href="/history">/history</a></p>
 
 </main>
+
+<script>
+  document.getElementById("vote-link").addEventListener("click", (e) => {
+    e.preventDefault();
+
+    const token = localStorage.getItem("first-vote") || false; // fallback
+
+    if (!token) {
+        window.location.href = `/before-you-vote`;    
+    } else {
+        window.location.href = `/vote`;
+    }
+  });
+</script>
