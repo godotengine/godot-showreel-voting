@@ -9,7 +9,6 @@
 		<div style="height: 58px;"></div>
 		<!-- navigation links -->
 		<div class="navigation-links">
-			<a class="desktop" href="/about">About</a>
 			{% if user %}
 				<div class="dropdown">
 					<a href="#" class="dd-button-view" onclick="document.getElementById('dropdown-menu').classList.toggle('show'); event.preventDefault();">
@@ -29,6 +28,7 @@
 					</div>
 				</div>
 			{% else %}
+				<a class="desktop" href="/about">About</a>
 				<div class="dropdown">
 					<a href="{{ url_for('oidc.login') }}" class="dd-button-view logged-out">
 						<p class="desktop">Login</p>
