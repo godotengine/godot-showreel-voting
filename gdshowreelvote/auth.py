@@ -11,9 +11,9 @@ oauth = OAuth()
 
 MOCK_USERS = {
     # Key: username, Value: moderator permission
-    'moderator': {'mod': True, 'sub': True},
-    'subscriber': {'mod': False, 'sub': True},
-    'user': {'mod': False, 'sub': False},
+    'moderator': {'mod': True, 'staff': True},
+    'staff': {'mod': False, 'staff': True},
+    'user': {'mod': False, 'staff': False},
 }
 
 
@@ -28,6 +28,16 @@ def login_required(f):
 
 
 def admin_required(f):
+    @wraps(f)
+    def decorated_func(*args, **kwargs):
+        if session.get('user') and session['user'].get('is_superuser', False):
+            return f(*args, **kwargs)
+        else:
+            return redirect(url_for('oidc.login'))
+    return decorated_func
+
+
+def vote_role_required(f):
     @wraps(f)
     def decorated_func(*args, **kwargs):
         if session.get('user') and session['user'].get('is_staff', False):
@@ -56,6 +66,7 @@ def mock_auth():
     if not username in MOCK_USERS:
         return redirect(url_for('oidc.login'))
     moderator = MOCK_USERS[username]['mod']
+    staff = MOCK_USERS[username]['staff']
     oidc_info = {
         'sub': f'MOCK_USER:{username}',
         'email_verified': True,
@@ -64,11 +75,12 @@ def mock_auth():
         'given_name': username.capitalize(),
         'family_name': username.capitalize(),
         'email': f'{username}@example.com',
-        'is_staff': moderator,
+        'is_staff': staff,
+        'is_superuser': moderator
     }
     user = DB.session.get(User, oidc_info['sub'])
     if not user:
-        user = User(id=oidc_info['sub'], username=oidc_info['name'], email=oidc_info['email'], is_staff=oidc_info['is_staff'])
+        user = User(id=oidc_info['sub'], username=oidc_info['name'], email=oidc_info['email'], is_staff=oidc_info['is_staff'], is_superuser=oidc_info['is_superuser'])
         DB.session.add(user)
         DB.session.commit()
     

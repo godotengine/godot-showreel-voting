@@ -30,7 +30,7 @@ def before_you_vote():
 
 @bp.route('/vote', methods=['GET'])
 @bp.route('/vote/<int:video_id>', methods=['GET'])
-@auth.login_required
+@auth.vote_role_required
 def vote_get(video_id=None):
 	if video_id:
 		video = DB.session.query(Video).filter(Video.id == video_id).first()
@@ -47,7 +47,7 @@ def vote_get(video_id=None):
 
 
 @bp.route('/vote', methods=['POST'])
-@auth.login_required
+@auth.vote_role_required
 def vote():
 	cast_vote_form = CastVoteForm()
 	select_specific_video_form = SelectVideoForm()
@@ -72,7 +72,7 @@ def vote():
 
 
 @bp.route('/history')
-@auth.login_required
+@auth.vote_role_required
 def history():
 	page = int(request.args.get('page', 1))
 	total_video_count = DB.session.query(Video).count()

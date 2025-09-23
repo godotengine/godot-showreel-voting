@@ -23,8 +23,7 @@
 <div class="panel padded" style="">
 	<h1>Welcome!</h1>
 	{% if user %}
-		<!-- <p>To be eligible to vote, you have to be a Godot Engine maintainer or a member of the <a href="https://fund.godotengine.org">Development Fund</a>.</p> -->
-		
+		{% if user.can_vote() %}
 		<p>Cast your votes until <strong>October 20th</strong> 📅</p>
 		<ul>
 			<li>Videos are presented in random order, and scores are hidden until the voting period ends</li>
@@ -36,6 +35,9 @@
 	
 		<p style="margin: 20px 0;">Happy voting!</p>		
 		<a class="button primary" id="vote-link" href="/vote">Start Voting</a> <a class="button dim" href="/history">History</a>
+		{% else %}
+			<p>To be eligible to vote, you have to be a Godot Engine maintainer or a member of the <a href="https://fund.godotengine.org">Development Fund</a>.</p>
+		{% endif %}
 	{% else %}
 	<hr>
 		You need to be logged in to vote:

@@ -19,7 +19,7 @@
 						<a href="/history">History</a>
 						<a class="mobile" href="/about">About</a>
 						<hr class="mobile">
-						{% if user.is_staff %}
+						{% if user.is_superuser %}
 							<a href="/admin">Administration</a>
 							<hr>
 						{% endif %}
