@@ -47,8 +47,13 @@
 						<p>Your vote: <strong>Skip ⏭️</strong></p>
 					{% endif %}
 					<div style="margin-top: 10px;">
-						<a class="button dim small" href="/vote/{{entry.video.id}}">Edit vote</a>
-					</div>	
+						<form action="/vote/{{entry.video.id}}" method="get" style="display:inline;">
+							<button type="submit" class="button dim small">Edit vote</button>
+						</form>
+						<form action="/vote/{{ entry.video.id }}/delete" method="post" style="display:inline;">
+							<button type="submit" class="button tertiary small">Delete vote</button>
+						</form>
+					</div>					
 				</div>
 			{% endfor %}
 		</div>

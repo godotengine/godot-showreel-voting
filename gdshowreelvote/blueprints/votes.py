@@ -1,6 +1,6 @@
 from werkzeug.exceptions import NotFound
 
-from flask import Blueprint, current_app, g, render_template, request
+from flask import Blueprint, current_app, g, redirect, render_template, request, url_for
 
 from gdshowreelvote import auth
 from gdshowreelvote.blueprints.forms import VOTE_ACTIONS, CastVoteForm, SelectVideoForm
@@ -69,6 +69,20 @@ def vote():
 	data, progress = vote_data(g.user, video)
 
 	return render_template('vote.html', data=data, progress=progress, cast_vote_form=cast_vote_form, select_specific_video_form=select_specific_video_form)
+
+
+@bp.route('/vote/<int:video_id>/delete', methods=['POST'])
+@auth.vote_role_required
+def delete_vote(video_id: int):
+	vote = DB.session.query(Vote).filter(Vote.user_id == g.user.id).filter(Vote.video_id == video_id).first()
+	if not vote:
+		current_app.logger.warning(f"Video with ID {video_id} not found.")
+		return "Video not found", 404
+
+	DB.session.delete(vote)
+	DB.session.commit()
+
+	return redirect(url_for('votes.history'))
 
 
 @bp.route('/history')
