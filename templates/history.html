@@ -11,6 +11,19 @@
 		display: grid;
 		grid-template-columns: 1fr;
 	}
+	.vote {
+		background: #48ec2563;
+		border-radius: 6px;
+		padding: 2px 8px;
+		display: inline-block;
+		margin-top: 4px;
+		&.yes {
+			background: #48ec2563;
+		}
+		&.no {
+			background: #ec484863;
+		}
+	}
 </style>
 <main id="history">
 	<h1 style="margin-bottom: 20px;">Vote history</h1>
@@ -26,9 +39,9 @@
 					<p>Category: <strong>{{ entry.video.showreel.title }}</strong></p>
 					<p>Author: <strong>{{ entry.video.author_name }}</strong></p>
 					{% if entry.rating == 1 %}
-						<p>Your vote: <strong>Yes 👍</strong></p>
+						<p>Your vote: <strong class="vote yes">Yes 👍</strong></p>
 					{% elif entry.rating == -1 %}
-						<p>Your vote: <strong>No 👎</strong></p>
+						<p>Your vote: <strong class="vote no">No 👎</strong></p>
 					{% else %}
 						<!-- This should not happen -->
 						<p>Your vote: <strong>Skip ⏭️</strong></p>
