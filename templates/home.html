@@ -2,9 +2,6 @@
 	h1 {
 		margin-bottom: 0.5em;
 	}
-	p {
-		margin-bottom: 1em;
-	}
 	h2 span a {
 		font-size: 14px;
 		font-weight: 400;
@@ -14,18 +11,31 @@
 		top: -3px;
   	text-decoration: none;
 	}
+	.grid-2 {
+		display: grid;
+		gap: 10px;
+		@media (min-width: 768px) {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
 </style>
 <main>
 <div class="panel padded" style="">
 	<h1>Welcome!</h1>
-	{% if user %}
-		<p>Before you vote, please make sure to read the <a href="/about">about</a> page to understand the guidelines and requirements.</p>
-
-		<p>To be eligible to vote, you have to be a Godot Engine maintainer or a member of the <a href="https://fund.godotengine.org">Development Fund</a>.</p>
-		<p>Your votes are anonymous and will only be used to curate the next official Godot showreel.<br>You can review and edit your votes at any time in the <a href="/history">vote history</a> section.</p>
-		<p>Happy voting!</p>
-		<a class="button primary" href="/vote">Start Voting</a>
-		<a class="button dim" href="/history">History</a>
+	{% if not user %}
+		<!-- <p>To be eligible to vote, you have to be a Godot Engine maintainer or a member of the <a href="https://fund.godotengine.org">Development Fund</a>.</p> -->
+		
+		<p>Cast your votes until <strong>October 20th</strong> 📅</p>
+		<ul>
+			<li>Videos are presented in random order, and scores are hidden until the voting period ends</li>
+			<li>Your votes are anonymous</li>
+			<li>You can change your votes until the voting period ends</li>
+			<li>We encourage you to vote for as many entries as you can</li>
+			<li>If you found any issue or if you have a suggestion, please create an issue in our <a href="https://github.com/godotengine/godot-showreel-voting/issues">issue tracker</a></li>
+		</ul>
+	
+		<p style="margin: 20px 0;">Happy voting!</p>		
+		<a class="button primary" href="/vote">Start Voting</a> <a class="button dim" href="/history">History</a>
 	{% else %}
 	<hr>
 		You need to be logged in to vote:
@@ -37,7 +47,7 @@
 
 <div class="panel padded" style="margin-top: 20px;">
 	<h2>Previous editions:<span><a href="https://www.youtube.com/playlist?list=PLeG_dAglpVo6EpaO9A1nkwJZOwrfiLdQ8">(View all)</a></span></h2>
-	<div style="display:grid; gap: 10px; grid-template-columns: 1fr 1fr; margin-top: 10px;">
+	<div class="grid-2" style="margin-top: 10px;">
 		<iframe width="560" height="315" src="https://www.youtube.com/embed/n1Lon_Q2T18" frameborder="0" allowfullscreen="" style="width:100%;aspect-ratio:16/9;height:auto; border-radius: 11px;"></iframe>
 		<iframe width="560" height="315" src="https://www.youtube.com/embed/W1_zKxYEP6Q" frameborder="0" allowfullscreen="" style="width:100%;aspect-ratio:16/9;height:auto; border-radius: 11px;"></iframe>
 	</div>
