@@ -22,7 +22,7 @@
 <main>
 <div class="panel padded" style="">
 	<h1>Welcome!</h1>
-	{% if not user %}
+	{% if user %}
 		<!-- <p>To be eligible to vote, you have to be a Godot Engine maintainer or a member of the <a href="https://fund.godotengine.org">Development Fund</a>.</p> -->
 		
 		<p>Cast your votes until <strong>October 20th</strong> 📅</p>
@@ -35,7 +35,7 @@
 		</ul>
 	
 		<p style="margin: 20px 0;">Happy voting!</p>		
-		<a class="button primary" href="/vote">Start Voting</a> <a class="button dim" href="/history">History</a>
+		<a class="button primary" id="vote-link" href="/vote">Start Voting</a> <a class="button dim" href="/history">History</a>
 	{% else %}
 	<hr>
 		You need to be logged in to vote:
@@ -56,15 +56,17 @@
 </main>
 
 <script>
-  document.getElementById("vote-link").addEventListener("click", (e) => {
-    e.preventDefault();
-
-    const token = localStorage.getItem("first-vote") || false; // fallback
-
-    if (!token) {
-        window.location.href = `/before-you-vote`;    
-    } else {
-        window.location.href = `/vote`;
-    }
-  });
+	document.addEventListener("DOMContentLoaded", function() {
+		const voteLink = document.getElementById("vote-link");
+		if (voteLink) {
+			const token = localStorage.getItem("first-vote") || false;
+			if (!token) {
+				voteLink.href = "/before-you-vote";
+				voteLink.textContent = "Start Voting";
+			} else {
+				voteLink.href = "/vote";
+				voteLink.textContent = "Continue Voting";
+			}
+		}
+	});
 </script>
