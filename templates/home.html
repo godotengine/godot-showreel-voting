@@ -36,7 +36,11 @@
 		<p style="margin: 20px 0;">Happy voting!</p>		
 		<a class="button primary" id="vote-link" href="/vote">Start Voting</a> <a class="button dim" href="/history">History</a>
 		{% else %}
-			<p>To be eligible to vote, you have to be a Godot Engine maintainer or a member of the <a href="https://fund.godotengine.org">Development Fund</a>.</p>
+			<p>Only Godot Engine maintainers or members of the Development Fund can vote.</p>
+			<p>If you would like to participate in the process, make sure to sign up to <a href="https://fund.godotengine.org">the Development Fund</a>.</p>
+			<p style="margin-top: 20px;">
+				<a href="https://fund.godotengine.org" class="button">Sign Up</a>
+			</p>
 		{% endif %}
 	{% else %}
 	<hr>
