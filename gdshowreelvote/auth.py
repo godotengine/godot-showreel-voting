@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from functools import wraps
-from typing import Dict
+from typing import Dict, List
 from flask import Flask, current_app, render_template, request, url_for, session
 from flask import redirect
 from authlib.integrations.flask_client import OAuth
@@ -11,11 +11,10 @@ from gdshowreelvote.database import User, DB
 oauth = OAuth()
 
 MOCK_USERS = {
-    'moderator': {'roles': {'admin': True, 'staff': True}, 'fund': {'roles': ['tier-bronze']}},
-    'staff': {'roles': {'admin': False, 'staff': True}},
-    'diamond-member': {'roles': {'admin': False, 'staff': False}, 'fund': {'roles': ['tier-diamond']}},
-    'bronze-member': {'roles': {'admin': False, 'staff': False}, 'fund': {'roles': ['tier-bronze']}},
-    'user': {'roles': {'admin': False, 'staff': False}},
+    'moderator': {'mod': True, 'staff': True, 'vote_allowed': True},
+    'staff': {'mod': False, 'staff': True, 'vote_allowed': False},
+    'diamond-member': {'mod': False, 'staff': False, 'vote_allowed': True},
+    'user': {'mod': False, 'staff': False, 'vote_allowed': False},
 }
 
 
@@ -73,10 +72,9 @@ def mock_auth():
     username = request.form.get('username', '').lower()
     if not username in MOCK_USERS:
         return redirect(url_for('oidc.login'))
-    moderator = MOCK_USERS[username]['roles']['admin']
-    staff = MOCK_USERS[username]['roles']['staff']
-    fund_roles = MOCK_USERS[username].get('fund', {}).get('roles', [])
-    vote_allowed = any([role in fund_roles for role in current_app.config.get('FUND_ROLES_WITH_VOTE_RIGHTS', [])])
+    moderator = MOCK_USERS[username]['mod']
+    staff = MOCK_USERS[username]['staff']
+    vote_allowed = MOCK_USERS[username]['vote_allowed']
     oidc_info = {
         'sub': f'MOCK_USER:{username}',
         'email_verified': True,
@@ -114,9 +112,29 @@ def oidc_login():
     return oauth.oidc.authorize_redirect(redirect_uri)
 
 
+def _fund_member_can_vote(user: Dict):
+    fund_roles = user.get('fund', {}).get('roles', [])
+    return any([role in fund_roles for role in current_app.config.get('FUND_ROLES_WITH_VOTE_RIGHTS', [])])
+
+
 def oidc_auth():
     token = oauth.oidc.authorize_access_token()
     session['user'] = token['userinfo']
+    if user := DB.session.get(User, token['userinfo']['sub']):
+        user.is_staff = 'staff' in session['user'].get('roles', [])
+        user.is_superuser = 'admin' in session['user'].get('roles', [])
+        user.vote_allowed = _fund_member_can_vote(session['user'])
+    else:
+        user = User(
+            id=token['userinfo']['sub'],
+            username=token['userinfo'].get('name', token['userinfo'].get('preferred_username', '')),
+            email=token['userinfo']['email'],
+            is_staff = 'staff' in session['user'].get('roles', []),
+            is_superuser = 'admin' in session['user'].get('roles', []),
+            vote_allowed = _fund_member_can_vote(session['user'])
+        )
+        DB.session.add(user)
+    DB.session.commit()
     return redirect('/')
 
 
