@@ -1,6 +1,9 @@
+import csv
+from io import StringIO
+from sqlalchemy import func
 from werkzeug.exceptions import NotFound
 
-from flask import Blueprint, current_app, g, redirect, render_template, request, url_for
+from flask import Blueprint, Response, current_app, g, redirect, render_template, request, url_for
 
 from gdshowreelvote import auth
 from gdshowreelvote.blueprints.forms import VOTE_ACTIONS, CastVoteForm, SelectVideoForm
@@ -120,3 +123,38 @@ def admin_view():
 	if request.args.get('page'):
 		return content
 	return render_template('default.html', content = content, user=g.user)
+
+
+@bp.route('/results')
+@auth.admin_required
+def download_vote_results():
+	result = (
+        DB.session.query(
+            Video,
+            func.count(Vote.id).filter(Vote.rating == 1).label("plus_votes"),
+			func.count(Vote.id).filter(Vote.rating == -1).label("minus_votes"),
+        )
+        .outerjoin(Vote, Vote.video_id == Video.id)
+        .group_by(Video.id)
+        .order_by(func.coalesce(func.sum(Vote.rating), 0).desc()).all()
+    )
+
+	csv_file = StringIO()
+	writer = csv.writer(csv_file)
+	writer.writerow(['Author', 'Follow-me link', 'Game', 'Video link', 'Download link', 'Contact email', 'Store Link', 'Positive votes', 'Negative votes'])
+
+	for video, plus_votes, minus_votes in result:
+		writer.writerow([
+            video.author_name,
+            video.follow_me_link,
+            video.game,
+            video.video_link,
+            video.video_download_link,
+            video.contact_email,
+            video.store_link,
+            plus_votes,
+            minus_votes
+        ])
+	response = Response(csv_file.getvalue(), mimetype='text/csv')
+	response.headers["Content-Disposition"] = "attachment; filename=vote_results.csv"
+	return response

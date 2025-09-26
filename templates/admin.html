@@ -14,6 +14,9 @@
 </style>
 <main id="admin">
 <h1 style="margin-bottom: 20px;">Vote results</h1>
+<form action="{{ url_for('votes.download_vote_results') }}" method="get" style="display:inline;">
+	<button type="submit" class="button primary small">Download results .csv</button>
+</form>
 <div>
 	<div class="entries">
 		{% for entry in vote_tally.items %}

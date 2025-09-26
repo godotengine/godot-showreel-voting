@@ -47,10 +47,10 @@
 						<p>Your vote: <strong>Skip ⏭️</strong></p>
 					{% endif %}
 					<div style="margin-top: 10px;">
-						<form action="/vote/{{entry.video.id}}" method="get" style="display:inline;">
+						<form action="{{ url_for('votes.vote_get', video_id=entry.video.id) }}" method="get" style="display:inline;">
 							<button type="submit" class="button dim small">Edit vote</button>
 						</form>
-						<form action="/vote/{{ entry.video.id }}/delete" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this vote?\n\nThis video will show again in the showreel vote.');">
+						<form action="{{ url_for('votes.delete_vote', video_id=entry.video.id) }}" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this vote?\n\nThis video will show again in the showreel vote.');">
 							<button type="submit" class="button dim small">Delete vote</button>
 						</form>
 					</div>					

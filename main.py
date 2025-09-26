@@ -150,6 +150,7 @@ def create_app(config=None):
                           video_link=row['Video link'],
                           video_download_link=row['Download link'],
                           store_link=row['Store Link'],
+                          contact_email=row['Contact email'],
                           author=author,
                           showreel=showreel)
                 DB.session.add(video)
