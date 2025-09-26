@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from functools import wraps
+from typing import Dict
 from flask import Flask, current_app, render_template, request, url_for, session
 from flask import redirect
 from authlib.integrations.flask_client import OAuth
@@ -10,10 +11,11 @@ from gdshowreelvote.database import User, DB
 oauth = OAuth()
 
 MOCK_USERS = {
-    # Key: username, Value: moderator permission
-    'moderator': {'mod': True, 'staff': True},
-    'staff': {'mod': False, 'staff': True},
-    'user': {'mod': False, 'staff': False},
+    'moderator': {'roles': {'admin': True, 'staff': True}, 'fund': {'roles': ['tier-bronze']}},
+    'staff': {'roles': {'admin': False, 'staff': True}},
+    'diamond-member': {'roles': {'admin': False, 'staff': False}, 'fund': {'roles': ['tier-diamond']}},
+    'bronze-member': {'roles': {'admin': False, 'staff': False}, 'fund': {'roles': ['tier-bronze']}},
+    'user': {'roles': {'admin': False, 'staff': False}},
 }
 
 
@@ -37,10 +39,16 @@ def admin_required(f):
     return decorated_func
 
 
+def _can_vote(user: Dict) -> bool:
+    if user.get('is_superuser', False) or user.get('is_staff', False) or user.get('vote_allowed', False):
+        return True
+    return False
+    
+
 def vote_role_required(f):
     @wraps(f)
     def decorated_func(*args, **kwargs):
-        if session.get('user') and session['user'].get('is_staff', False):
+        if session.get('user') and _can_vote(session['user']):
             return f(*args, **kwargs)
         else:
             return redirect(url_for('oidc.login'))
@@ -65,8 +73,10 @@ def mock_auth():
     username = request.form.get('username', '').lower()
     if not username in MOCK_USERS:
         return redirect(url_for('oidc.login'))
-    moderator = MOCK_USERS[username]['mod']
-    staff = MOCK_USERS[username]['staff']
+    moderator = MOCK_USERS[username]['roles']['admin']
+    staff = MOCK_USERS[username]['roles']['staff']
+    fund_roles = MOCK_USERS[username].get('fund', {}).get('roles', [])
+    vote_allowed = any([role in fund_roles for role in current_app.config.get('FUND_ROLES_WITH_VOTE_RIGHTS', [])])
     oidc_info = {
         'sub': f'MOCK_USER:{username}',
         'email_verified': True,
@@ -76,11 +86,14 @@ def mock_auth():
         'family_name': username.capitalize(),
         'email': f'{username}@example.com',
         'is_staff': staff,
-        'is_superuser': moderator
+        'is_superuser': moderator,
+        'vote_allowed': vote_allowed
     }
     user = DB.session.get(User, oidc_info['sub'])
     if not user:
-        user = User(id=oidc_info['sub'], username=oidc_info['name'], email=oidc_info['email'], is_staff=oidc_info['is_staff'], is_superuser=oidc_info['is_superuser'])
+        user = User(id=oidc_info['sub'], username=oidc_info['name'], email=oidc_info['email'], 
+                    is_staff=oidc_info['is_staff'], is_superuser=oidc_info['is_superuser'], 
+                    vote_allowed=oidc_info['vote_allowed'])
         DB.session.add(user)
         DB.session.commit()
     
