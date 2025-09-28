@@ -38,14 +38,13 @@ class User(DB.Model):
     is_staff: Mapped[bool] = mapped_column(Boolean, default=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False)
-    vote_allowed: Mapped[str] = mapped_column(Boolean, default=False)
     date_joined: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     videos: Mapped[List['Video']] = relationship(back_populates="author", cascade="all, delete-orphan")
     votes: Mapped[List['Vote']] = relationship(back_populates="user", cascade="all, delete-orphan")
 
     def can_vote(self):
-        return self.is_superuser or self.is_staff or self.vote_allowed
+        return self.is_superuser or self.is_staff
 
 
 class Showreel(DB.Model):
