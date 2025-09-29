@@ -90,15 +90,7 @@ def mock_auth():
         'roles': roles,
         'fund': {'roles': fund_roles}
     }
-    user = DB.session.get(User, oidc_info['sub'])
-    if not user:
-        user = User(id=oidc_info['sub'], username=oidc_info['name'], email=oidc_info['email'], 
-                    is_staff=STAFF_ROLE in oidc_info['roles'], 
-                    is_superuser=ADMIN_ROLE in oidc_info['roles'],
-                    is_fund_member=_fund_member_can_vote(oidc_info))
-        DB.session.add(user)
-        DB.session.commit()
-    
+    update_or_create_user(oidc_info)
 
     session['user'] = oidc_info
     return redirect('/')
@@ -124,22 +116,26 @@ def _fund_member_can_vote(user: Dict):
 def oidc_auth():
     token = oauth.oidc.authorize_access_token()
     session['user'] = token['userinfo']
-    if user := DB.session.get(User, token['userinfo']['sub']):
-        user.is_staff = STAFF_ROLE in session['user'].get('roles', [])
-        user.is_superuser = ADMIN_ROLE in session['user'].get('roles', [])
-        user.is_fund_member = _fund_member_can_vote(session['user'])
+    update_or_create_user(token['userinfo'])
+    return redirect('/')
+
+
+def update_or_create_user(oidc_info: Dict):
+    if user := DB.session.get(User, oidc_info['sub']):
+        user.is_staff = STAFF_ROLE in oidc_info.get('roles', [])
+        user.is_superuser = ADMIN_ROLE in oidc_info.get('roles', [])
+        user.is_fund_member = _fund_member_can_vote(oidc_info)
     else:
         user = User(
-            id=token['userinfo']['sub'],
-            username=token['userinfo'].get('name', token['userinfo'].get('preferred_username', '')),
-            email=token['userinfo']['email'],
-            is_staff = STAFF_ROLE in session['user'].get('roles', []),
-            is_superuser = ADMIN_ROLE in session['user'].get('roles', []),
-            is_fund_member = _fund_member_can_vote(session['user'])
+            id=oidc_info['sub'],
+            username=oidc_info.get('name', oidc_info.get('preferred_username', '')),
+            email=oidc_info['email'],
+            is_staff = STAFF_ROLE in oidc_info.get('roles', []),
+            is_superuser = ADMIN_ROLE in oidc_info.get('roles', []),
+            is_fund_member = _fund_member_can_vote(oidc_info)
         )
         DB.session.add(user)
     DB.session.commit()
-    return redirect('/')
 
 
 def oidc_logout():
