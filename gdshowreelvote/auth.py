@@ -78,7 +78,7 @@ def mock_auth():
     roles.append(ADMIN_ROLE) if MOCK_USERS[username]['mod'] else None
     roles.append(STAFF_ROLE) if MOCK_USERS[username]['staff'] else None
     fund_roles = []
-    fund_roles.append('tier-diamond') if MOCK_USERS[username]['fund_member'] else None
+    fund_roles.append('member') if MOCK_USERS[username]['fund_member'] else None
     oidc_info = {
         'sub': f'MOCK_USER:{username}',
         'email_verified': True,
@@ -93,8 +93,9 @@ def mock_auth():
     user = DB.session.get(User, oidc_info['sub'])
     if not user:
         user = User(id=oidc_info['sub'], username=oidc_info['name'], email=oidc_info['email'], 
-                    is_staff=STAFF_ROLE in oidc_info['roles'] or _fund_member_can_vote(oidc_info), 
-                    is_superuser=ADMIN_ROLE in oidc_info['roles'])
+                    is_staff=STAFF_ROLE in oidc_info['roles'], 
+                    is_superuser=ADMIN_ROLE in oidc_info['roles'],
+                    is_fund_member=_fund_member_can_vote(oidc_info))
         DB.session.add(user)
         DB.session.commit()
     
@@ -124,15 +125,17 @@ def oidc_auth():
     token = oauth.oidc.authorize_access_token()
     session['user'] = token['userinfo']
     if user := DB.session.get(User, token['userinfo']['sub']):
-        user.is_staff = STAFF_ROLE in session['user'].get('roles', []) or _fund_member_can_vote(session['user'])
+        user.is_staff = STAFF_ROLE in session['user'].get('roles', [])
         user.is_superuser = ADMIN_ROLE in session['user'].get('roles', [])
+        user.is_fund_member = _fund_member_can_vote(session['user'])
     else:
         user = User(
             id=token['userinfo']['sub'],
             username=token['userinfo'].get('name', token['userinfo'].get('preferred_username', '')),
             email=token['userinfo']['email'],
-            is_staff = STAFF_ROLE in session['user'].get('roles', []) or _fund_member_can_vote(session['user']),
+            is_staff = STAFF_ROLE in session['user'].get('roles', []),
             is_superuser = ADMIN_ROLE in session['user'].get('roles', []),
+            is_fund_member = _fund_member_can_vote(session['user'])
         )
         DB.session.add(user)
     DB.session.commit()

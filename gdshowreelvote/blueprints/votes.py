@@ -7,7 +7,7 @@ from flask import Blueprint, Response, current_app, g, redirect, render_template
 
 from gdshowreelvote import auth
 from gdshowreelvote.blueprints.forms import VOTE_ACTIONS, CastVoteForm, SelectVideoForm
-from gdshowreelvote.database import DB, Video, Vote
+from gdshowreelvote.database import DB, User, Video, Vote
 from gdshowreelvote.utils import choose_random_video, get_total_votes, vote_data
 
 
@@ -133,17 +133,20 @@ def download_vote_results():
             Video,
             func.count(Vote.id).filter(Vote.rating == 1).label("plus_votes"),
 			func.count(Vote.id).filter(Vote.rating == -1).label("minus_votes"),
+			func.count(Vote.id).filter((User.is_staff == True)).label("staff_votes"),
+			func.count(Vote.id).filter((User.is_fund_member == True)).label("fund_member_votes"),
         )
         .outerjoin(Vote, Vote.video_id == Video.id)
+		.outerjoin(User, User.id == Vote.user_id)
         .group_by(Video.id)
         .order_by(func.coalesce(func.sum(Vote.rating), 0).desc()).all()
     )
 
 	csv_file = StringIO()
 	writer = csv.writer(csv_file)
-	writer.writerow(['Author', 'Follow-me link', 'Game', 'Video link', 'Download link', 'Contact email', 'Store Link', 'Positive votes', 'Negative votes'])
+	writer.writerow(['Author', 'Follow-me link', 'Game', 'Video link', 'Download link', 'Contact email', 'Store Link', 'Positive votes', 'Negative votes', 'staff', 'fund_member'])
 
-	for video, plus_votes, minus_votes in result:
+	for video, plus_votes, minus_votes, staff_votes, fund_member_votes in result:
 		writer.writerow([
             video.author_name,
             video.follow_me_link,
@@ -153,7 +156,9 @@ def download_vote_results():
             video.contact_email,
             video.store_link,
             plus_votes,
-            minus_votes
+            minus_votes,
+			staff_votes,
+			fund_member_votes
         ])
 	response = Response(csv_file.getvalue(), mimetype='text/csv')
 	response.headers["Content-Disposition"] = "attachment; filename=vote_results.csv"
