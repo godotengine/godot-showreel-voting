@@ -16,8 +16,10 @@
 					</a>
 					<div id="dropdown-menu" class="dropdown-content">
 						<a href="/about">About</a>
-						<a href="/vote">Vote</a>
-						<a href="/history">History</a>
+						{% if user.can_vote() %}
+							<a href="/vote">Vote</a>
+							<a href="/history">History</a>
+						{% endif %}
 						{% if user.is_superuser %}
 							<a href="/admin">Administration</a>
 						{% endif %}
