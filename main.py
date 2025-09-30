@@ -19,12 +19,6 @@ def create_app(config=None):
     # Load the default config
     app.config.from_pyfile('config.py', silent=True)
     
-    app.config.from_mapping(
-        ENV = 'dev',
-        SECRET_KEY = 'dev',
-        SQLALCHEMY_DATABASE_URI = 'sqlite:///app.sqlite?charset=utf8mb4',
-        OIDC_MOCK = True
-    )
     if config:
         app.config.update(config)
 
