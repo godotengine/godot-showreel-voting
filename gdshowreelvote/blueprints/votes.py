@@ -46,7 +46,7 @@ def vote_get(video_id=None):
 	data, progress = vote_data(g.user, video)
 	
 	content = render_template('vote.html', data=data, progress=progress, cast_vote_form=CastVoteForm(), select_specific_video_form=SelectVideoForm())
-	return render_template('default.html', content = content, user=g.user)
+	return render_template('default.html', content = content, user=g.user, hide_nav=True)
 
 
 @bp.route('/vote', methods=['POST'])

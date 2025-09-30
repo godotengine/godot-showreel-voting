@@ -7,16 +7,9 @@
 	<meta name="description" content="{% if description %}{{ description }}{% else %}Godot's annual showreel voting platform.{% endif %}">
 	<title>{% if title %}{{ title }} - {% endif %}Godot Showreel Voting</title>
 	<link rel="icon" href="/static/images/favicon.svg" type="image/svg+xml">
-	<link rel="stylesheet" href="https://store-beta.godotengine.org/static/base.css">
+	<link rel="stylesheet" href="/static/css/1.1/base.css">
 	<link rel="stylesheet" href="https://store-beta.godotengine.org/static/style/main.css">
-	<link rel="stylesheet" href="https://store-beta.godotengine.org/static/style/nav.css">
-	<link rel="stylesheet" href="https://store-beta.godotengine.org/static/style/asset-dashboard.css">
-	<link rel="stylesheet" href="https://store-beta.godotengine.org/static/style/asset-item.css">
-	<link rel="stylesheet" href="https://store-beta.godotengine.org/static/style/generic-form.css">
-	<link rel="stylesheet" href="https://store-beta.godotengine.org/static/style/popup.css">
-	<link rel="stylesheet" href="https://store-beta.godotengine.org/static/style/tags.css">
-	<link rel="stylesheet" href="https://store-beta.godotengine.org/static/style/page/library.css">
-	<link rel="stylesheet" href="https://store-beta.godotengine.org/static/style/code-hilite.css">
+	<link rel="stylesheet" href="/static/css/1.1/nav.css">
 	<script src="https://unpkg.com/htmx.org@1.9.12"></script>
 	<script src="https://store-beta.godotengine.org/static/js/tiny-slider.js"></script>
 	<meta property="og:site_name" content="Godot Showreel Voting">
@@ -32,7 +25,7 @@
 		<p>JavaScript is disabled in your browser. Some features of this site may not work properly.</p>
 	</noscript>
 	{% import "macros.html" as macros %}
-	{{ macros.nav(user) }}
+	{% if hide_nav %}{% else %}{{ macros.nav(user) }}{% endif %}
 	{{ content | safe }}
 	{{ macros.footer() }}
 	<script src="/static/main.js"></script>

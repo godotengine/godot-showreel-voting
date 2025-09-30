@@ -15,13 +15,11 @@
 						<img src="https://www.gravatar.com/avatar/{{ user.gravatar_hash }}?d=retro" alt="User" title="{{ user.usernamename }}" class="user-icon gravatar">
 					</a>
 					<div id="dropdown-menu" class="dropdown-content">
+						<a href="/about">About</a>
 						<a href="/vote">Vote</a>
 						<a href="/history">History</a>
-						<a class="mobile" href="/about">About</a>
-						<hr class="mobile">
 						{% if user.is_superuser %}
 							<a href="/admin">Administration</a>
-							<hr>
 						{% endif %}
 						<hr>
 						<a href="{{ url_for('oidc.logout') }}">Logout</a>

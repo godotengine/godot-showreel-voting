@@ -3,10 +3,10 @@
 		width: 100%;
 		aspect-ratio: 16 / 9;
 		height: auto;
-		border-radius: 6px;
+		margin-bottom: -5px;
 	}
-	main {
-		margin-top: -10px;
+	div.main {
+		max-width: 134vh;
 	}
 	.col-2 {
 		text-align: left;
@@ -20,7 +20,6 @@
 		font-size: 1.3em;
 		padding: 41px 50px;
 		text-align: left;
-		/* max-width: 600px; */
 		margin: 0 auto;
 		h1 {
 			margin-bottom: 10px;
@@ -37,59 +36,103 @@
 			color: inherit;
 			opacity: 0.8;
 			text-decoration: none;
+			position: relative;
+    		top: 3px;
+			progress {
+				max-width: 190px;
+				margin-right: 0;
+				margin-left: auto;
+				position: relative;
+				top: -8px;
+			}
 		}
 		span {
 			display: block;
 		}
 	}
+	div.main.title {
+		margin-top: -20px;
+		margin-bottom: -15px;
+		padding-top: 10px;
+		max-width: 100%;
+		h1 {
+			@media (min-width: 768px) {
+				text-align: center;
+				position: relative;
+				top: 4px;
+			}
+		}
+		.col-2 {
+			@media (min-width: 768px) {
+				grid-template-columns: 200px 1fr 200px;
+			}
+		}
+	}
 </style>
-<main id="vote-view">
+<div id="vote-view">
 	{% if not data %}
-		<div class="thank-you panel">
-			<h1>Thank you for participating!</h1>
-			<p>You already voted on all the submitted projects.</p>
-			<p>After the voting period ends, we will work on making the video.</p>
-			<p>If you want to revisit your votes, review them <a href="/history">here</a>.</p>
+		<div class="main">
+			<div class="thank-you panel">
+				<h1>Thank you for participating!</h1>
+				<p>You already voted on all the submitted projects.</p>
+				<p>After the voting period ends, we will start working on the video.</p>
+				<p>If you want to revisit your votes, review them <a href="/history">here</a>.</p>
+			</div>
 		</div>
 	{% else %}
-		<div class="col-2">
-			<h1>Submission: {{ data.game }}</h1>
-			<div style="display: grid; align-content: end;">
-				<div class="progress">
-					<a href="/history">
-						<span>Progress: {{ progress.current }}/{{ progress.total }}</span>
-						<progress value="{{ progress.current }}" max="{{ progress.total }}" style="max-width: 190px; margin-right: 0; margin-left: auto;"></progress>
-					</a>
+		<div style="background: black; color: white; margin-bottom: -20px; padding-bottom: 24px;">
+			<div class="main title">
+				<div class="col-2" style="margin-bottom: 0;">
+					<div>
+						<a href="/">
+							<img class="logo" src="/static/images/nav-logo.svg" alt="Godot Showreel Voting">
+						</a>
+					</div>
+					<h1>{{ data.game }}</h1>
+					<div style="display: grid; align-content: end;">
+						<div class="progress">
+							<a href="/history">
+								<span>Progress: {{ progress.current }}/{{ progress.total }}</span>
+								<progress value="{{ progress.current }}" max="{{ progress.total }}"></progress>
+							</a>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 
-		<div >
-			<iframe width="560" height="315" src="{{ data.youtube_embed }}?rel=0&autoplay=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-			<div class="panel padded">
-				<h2 style="margin-bottom: 10px; text-align: center;">Should this submission be included in the next showreel?</h2>
-				<form method="POST" enctype="multipart/form-data" hx-post="{{ url_for("votes.vote", _method='POST') }}" hx-target='#vote-view' hx-swap='outerHTML'>
-					<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-						{{ cast_vote_form.csrf_token }}
-						{{ cast_vote_form.video_id(value=data.id, hidden=True) }}
-						<button type="submit" name="action" value="downvote" class="button tertiary">No 👎</button>
-						<button type="submit" name="action" value="skip" class="button dim">Skip ⏭️</button>
-						<button type="submit" name="action" value="upvote" class="button primary">Yes 👍</button>
-					</div>
-				</form>
+		<div>
+			<div style="background: black; margin: 20px 0;">
+				<div class="main">
+					<iframe width="560" height="315" src="{{ data.youtube_embed }}?rel=0&autoplay=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+				</div>
 			</div>
-			
-			<div class="panel padded" style="margin-top: 10px;">
-				<h2>Submission info:</h2>
-				<div class="col-2">
-					<p>Project: <strong>{{ data.game }}</strong></p>
-					<p>Video Link: <a href="{{ data.video_link }}" target="_blank">{{ data.video_link }}</a></p>
-					<p>Author: <strong>{{ data.author }}</strong></p>
-					<p>Store Link: <a href="{{ data.store_link }}" target="_blank">{{ data.store_link }}</a></p>
-					<p>Category: <strong>{{ data.category }}</strong></p>
-					<p>Follow them: <a href="{{ data.follow_me_link }}" target="_blank">{{ data.follow_me_link }}</a></p>
+			<div class="main">
+				<div class="panel padded">
+					<h2 style="margin-bottom: 10px; text-align: center;">Should this submission be included in the next showreel?</h2>
+					<form method="POST" enctype="multipart/form-data" hx-post="{{ url_for("votes.vote", _method='POST') }}" hx-target='#vote-view' hx-swap='outerHTML'>
+						<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+							{{ cast_vote_form.csrf_token }}
+							{{ cast_vote_form.video_id(value=data.id, hidden=True) }}
+							<button type="submit" name="action" value="downvote" class="button tertiary">No 👎</button>
+							<button type="submit" name="action" value="skip" class="button dim">Skip ⏭️</button>
+							<button type="submit" name="action" value="upvote" class="button primary">Yes 👍</button>
+						</div>
+					</form>
+				</div>
+
+				<div class="panel padded" style="margin-top: 10px;">
+					<h2>Submission info:</h2>
+					<div class="col-2">
+						<p>Project: <strong>{{ data.game }}</strong></p>
+						<p>Video Link: <a href="{{ data.video_link }}" target="_blank">{{ data.video_link }}</a></p>
+						<p>Author: <strong>{{ data.author }}</strong></p>
+						<p>Store Link: <a href="{{ data.store_link }}" target="_blank">{{ data.store_link }}</a></p>
+						<p>Category: <strong>{{ data.category }}</strong></p>
+						<p>Follow them: <a href="{{ data.follow_me_link }}" target="_blank">{{ data.follow_me_link }}</a></p>
+					</div>
 				</div>
 			</div>
 		</div>
 	{% endif %}
-</main>
+</div>
