@@ -114,9 +114,9 @@
 						<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
 							{{ cast_vote_form.csrf_token }}
 							{{ cast_vote_form.video_id(value=data.id, hidden=True) }}
-							<button id="downvote" type="submit" name="action" value="downvote" class="button tertiary" title="Shortcut: 'D' key">No 👎</button>
+							<button id="downvote" type="submit" name="action" value="downvote" class="button tertiary" title="Shortcut: 'A' or 'Q' keys">No 👎</button>
 							<button id="skip" type="submit" name="action" value="skip" class="button dim" title="Shortcut: 'Space' key">Skip ⏭️</button>
-							<button id="upvote" type="submit" name="action" value="upvote" class="button primary" title="Shortcut: 'A' key">Yes 👍</button>
+							<button id="upvote" type="submit" name="action" value="upvote" class="button primary" title="Shortcut: 'D' key">Yes 👍</button>
 						</div>
 					</form>
 				</div>
@@ -145,7 +145,7 @@
 			var e = e || window.event;
 			if (e.key === "d") {
 				document.getElementById("upvote").click();
-			} else if (e.key === "a") {
+			} else if (e.key === "a" || e.key === "q") {
 				document.getElementById("downvote").click();
 			} else if (e.key === " ") {
 				document.getElementById("skip").click();
