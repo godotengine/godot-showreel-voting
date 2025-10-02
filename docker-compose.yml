@@ -1,0 +1,43 @@
+services:
+
+  showreel:
+    build: .
+    volumes:
+      - ./instance:/app/instance
+    ports:
+      - 5000:5000
+    command: /app/run.sh
+    configs:
+      - source: showreel_run
+        target: /app/run.sh
+        mode: 0755
+    depends_on:
+      mariadb:
+        condition: service_healthy
+
+  mariadb:
+    image: mariadb
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    environment:
+      MARIADB_DATABASE: showreel
+      MARIADB_USER: showreel
+      MARIADB_PASSWORD: showreel1234
+      MARIADB_ROOT_PASSWORD: root1234
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+configs:
+  showreel_run:
+    content: |
+      #!/usr/bin/env bash
+      set -euo pipefail
+      flask --app main db upgrade
+      flask --app main run --debug --host 0.0.0.0"
+
+volumes:
+  mariadb_data:
