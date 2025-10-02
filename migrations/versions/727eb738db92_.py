@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: f2cbdb804d58
+Revision ID: 727eb738db92
 Revises: 
-Create Date: 2025-09-16 17:57:25.578892
+Create Date: 2025-10-02 14:54:26.247464
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'f2cbdb804d58'
+revision = '727eb738db92'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -30,7 +30,8 @@ def upgrade():
     sa.Column('username', sa.String(length=150), nullable=True),
     sa.Column('is_staff', sa.Boolean(), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=False),
-    sa.Column('is_superuser', sa.Boolean(), server_default='0', nullable=False),
+    sa.Column('is_superuser', sa.Boolean(), nullable=False),
+    sa.Column('is_fund_member', sa.Boolean(), nullable=False),
     sa.Column('date_joined', sa.DateTime(), nullable=False),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_users')),
     sa.UniqueConstraint('email', name=op.f('uq_users_email')),
@@ -39,7 +40,7 @@ def upgrade():
     op.create_table('videos',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('showreel_id', sa.Integer(), nullable=True),
-    sa.Column('author_id', sa.Integer(), nullable=False),
+    sa.Column('author_id', sa.String(length=128), nullable=False),
     sa.Column('game', sa.String(length=200), nullable=False),
     sa.Column('author_name', sa.String(length=200), nullable=False),
     sa.Column('video_link', sa.String(length=200), nullable=False),
@@ -55,7 +56,7 @@ def upgrade():
     )
     op.create_table('votes',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
-    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.String(length=128), nullable=False),
     sa.Column('video_id', sa.Integer(), nullable=False),
     sa.Column('rating', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),

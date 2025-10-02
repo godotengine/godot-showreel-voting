@@ -63,7 +63,7 @@ class Video(DB.Model):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     showreel_id: Mapped[int] = mapped_column(Integer, ForeignKey("showreels.id"), nullable=True)
-    author_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
+    author_id: Mapped[str] = mapped_column(String(KEYCLOAK_ID_SIZE), ForeignKey("users.id"), nullable=False)
 
     game: Mapped[str] = mapped_column(String(200), nullable=False, default="")
     author_name: Mapped[str] = mapped_column(String(200), nullable=False, default="")
@@ -82,7 +82,7 @@ class Vote(DB.Model):
     __tablename__ = "votes"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id: Mapped[str] = mapped_column(String(KEYCLOAK_ID_SIZE), ForeignKey("users.id"), nullable=False)
     video_id: Mapped[int] = mapped_column(Integer, ForeignKey("videos.id"), nullable=False)
 
     rating: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
