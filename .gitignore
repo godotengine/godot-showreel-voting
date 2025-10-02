@@ -5,11 +5,12 @@ __pycache__
 .venv
 venv/
 
-# Collected static files
-static/
-
 # VS project
 .vscode
 
 # Ignore the config file as it may contain secrets
 .env
+
+# db files
+instance/*
+!instance/example-config.py

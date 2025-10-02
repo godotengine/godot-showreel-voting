@@ -1,0 +1,239 @@
+/* This css file contains the base of all elements used in the Godot Foundation Web Apps */
+/* V1.1 */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+  color-scheme: light dark;
+	--background-color: #e7e7e7;
+	--text-color: #272727;
+	--header-font-family: "Montserrat", sans-serif;
+	--main-font-family: "Noto Sans", sans-serif;
+	--panel-background: white;
+	--basic-gap: 20px;
+	--accent-color: #478cbf;
+	--notebox-color: #d79e54;
+	--notebox-text-color: #1e1e1e;
+	@media (prefers-color-scheme: dark) {
+		--background-color: #131313;
+		--text-color: white;
+		--panel-background: #1e1e1e;
+	}
+}
+
+.mobile {
+	@media (min-width: 768px) {
+		display: none !important;
+	}
+}
+
+.desktop {
+	@media (max-width: 768px) {
+		display: none !important;
+	}
+}
+
+/* Reset */
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+/* Global styles */
+
+html {
+	background: #1e1e1e;
+	color: var(--text-color);
+}
+
+body {
+	background: var(--background-color);
+	font-family: var(--main-font-family);
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: var(--header-font-family);
+  font-weight: 800;
+}
+
+button {
+	border: 0;
+	background: none;
+	cursor: pointer;
+}
+
+hr {
+	border: 0;
+  height: 1px;
+  background: #9595951f;
+  margin: 15px 0px;
+}
+
+a {
+	color: #2fa7ff;
+}
+
+table {
+	min-width: 100%;
+	border-collapse: collapse;
+
+	td, th {
+		text-align: left;
+		border: none;
+		padding: calc( var(--basic-gap) / 2 );
+	}
+	tr:nth-child(even) {
+		background-color: var(--panel-background);
+	}
+	tr:nth-child(odd) {
+		background-color: var(--background-color);
+	}
+
+	td.fit-content, th.fit-content {
+		width: 1%;
+		white-space: nowrap;
+	}
+}
+
+
+
+footer {
+	width: 100%;
+	text-align: center;
+	font-size: 12px;
+	background: #1e1e1e;
+	color: white;
+  margin: 0;
+  padding: 30px 0;
+  margin-top: 30px;
+}
+
+
+main, div.main {
+	max-width: 1300px;
+	margin: 0 auto;
+	margin-top: 20px;
+	padding: 0 20px;
+}
+
+
+
+blockquote {
+	border-left: 3px solid #aaa;
+  padding: 12px;
+  margin: 12px 0;
+  background: #00000026;
+}
+
+textarea {
+	width: 100%;
+	resize: vertical;
+}
+
+ol, ul {
+	padding-left: 20px;
+}
+
+input, select, textarea {
+	padding: 10px;
+	margin-top: 5px;
+	font-family: inherit;
+	border-radius: 5px;
+	border: 1px solid #606060;
+	margin-bottom: 9px;
+	@media (prefers-color-scheme: light) {
+		border-color: #e1e1e1;
+	}
+}
+
+option {
+	@media (prefers-color-scheme: dark) {
+		background-color: #1e1e1e;
+	}
+}
+
+input[type="checkbox"] {
+	width: auto;
+}
+
+textarea {
+	resize: vertical;
+}
+
+.button, button, input[type="button"], input[type="submit"] {
+	text-decoration: none;
+	background: linear-gradient(10deg, rgb(97, 129, 255), rgb(1, 170, 187));
+	max-width: 100%;
+	display: inline-block;
+	text-align: center;
+	padding: 13px;
+	border-radius: 6px;
+	box-shadow: 0 7px 27px -17px black;
+	font-weight: 700;
+	font-size: 19px;
+	margin-top: 4px;
+	transition: all 0.1s ease-in-out;
+	color: white;
+	span.muted {
+		font-weight: 500;
+		opacity: 0.8;
+		font-size: 16px;
+	}
+	&:hover {
+		box-shadow: none;
+	}
+	&.primary {
+		background: linear-gradient(10deg, rgb(96, 213, 103), rgb(134, 206, 94));
+		@media (prefers-color-scheme: dark) {
+			background: linear-gradient(10deg, rgb(96, 213, 103), rgb(1, 151, 88))
+		}
+		color: white;
+	}
+	&.secondary {
+		background: linear-gradient(10deg, rgb(97, 129, 255), rgb(1, 170, 187));
+		color: white;
+	}
+	&.tertiary {
+		background: linear-gradient(10deg, rgb(255, 97, 97), rgb(245, 71, 71));
+		color: white;
+	}
+	&.dim, &:disabled {
+		background: linear-gradient(10deg, rgb(68, 68, 68), rgb(98, 98, 98));
+		@media (prefers-color-scheme: dark) {
+			background: linear-gradient(10deg, rgba(97, 129, 255, 0.1), rgba(71, 229, 245, 0.06));
+		}
+		color: white;
+	}
+	&:disabled {
+		color: #cccccc;
+		cursor: not-allowed;
+	}
+	&.small {
+		padding: 6px 11px;
+		font-size: 16px;
+		margin: 0;
+	}
+}
+
+.panel {
+	background-color: var(--panel-background);
+	border-radius: 8px;
+	box-shadow: light-dark(0 0 10px -9px black, none);
+	border: 1px solid light-dark(#d3d3d3, #3a3a3a);
+	&.padded {
+		padding: 16px;
+	}
+
+	&.note {
+		background-color: var(--notebox-color);
+		color: var(--notebox-text-color);
+	}
+	&.hoverable {
+		transition: background-color 0.1s ease-in-out;
+		&:hover {
+			background-color: light-dark(#e0fff6, #404040);
+		}
+	}
+}

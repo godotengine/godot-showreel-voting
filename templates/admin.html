@@ -1,0 +1,36 @@
+<style>
+	.entries {
+		margin-top: 20px;
+		display: grid;
+		gap: 20px;
+		@media (min-width: 768px) {
+			grid-template-columns: 1fr 1fr 1fr;
+		}
+	}
+	.entry {
+		display: grid;
+		grid-template-columns: 1fr;
+	}
+</style>
+<main id="admin">
+<h1 style="margin-bottom: 20px;">Vote results</h1>
+<form action="{{ url_for('votes.download_vote_results') }}" method="get" style="display:inline;">
+	<button type="submit" class="button primary small">Download results .csv</button>
+</form>
+<div>
+	<div class="entries">
+		{% for entry in vote_tally.items %}
+			<div class="entry panel padded">
+				<h2>{{ entry[0].game }}</h2>
+				<p>Category: <strong>{{ entry[0].showreel.title }}</strong></p>
+				<p>Author: <strong>{{ entry[0].author_name }}</strong></p>
+				<p>Vote sum: <strong>{{ entry[1] }}</strong></p>
+				<p>Votes received: <strong>{{ entry[2] }}</strong></p>
+			</div>
+		{% endfor %}
+	</div>
+	{% with elements=vote_tally, request_url="votes.admin_view", hx_target="#admin", strategy="outerHTML" %}
+		{% include "pagination.html" with context %}
+	{% endwith %}
+</div>
+</main>

@@ -11,46 +11,54 @@
 		display: grid;
 		grid-template-columns: 1fr;
 	}
+	.vote {
+		background: #48ec2563;
+		border-radius: 6px;
+		padding: 2px 8px;
+		display: inline-block;
+		margin-top: 4px;
+		&.yes {
+			background: #48ec2563;
+		}
+		&.no {
+			background: #ec484863;
+		}
+	}
 </style>
-<main>
-<h1 style="margin-bottom: 20px;">Vote history</h1>
-<div class="">
-		<p>You have voted {{ progress.current }} out of {{ progress.total }} entries. <a href="/vote">Continue voting</a>.</p>
+<main id="history">
+	<h1 style="margin-bottom: 20px;">Vote history</h1>
+	<div>
+		<p>You have voted {{ progress.current }} out of {{ progress.total }} entries. {% if progress.current != progress.total %}<a href="/vote">Continue voting</a>.{% endif %}</p>
 
 		<div class="entries">
 			<!-- Items should be sorted by what you Voted last in chronological order -->
 			<!-- This should be a loop -->
-			<div class="entry panel padded">
-				<h2>Brotato</h2>
-				<p>Category: <strong>2025 Godot Desktop/Console Games</strong></p>
-				<p>Author: <strong>Blobfish Games</strong></p>
-				<p>Your vote: <strong>Yes 👍</strong></p>
-				<div style="margin-top: 10px;">
-					<a class="button dim small" href="/vote/22">Edit vote</a>
-				</div>	
-			</div>
-
-			<div class="entry panel padded">
-				<h2>Project Katana</h2>
-				<p>Category: <strong>2025 Godot Desktop/Console Games</strong></p>
-				<p>Author: <strong>John Doe</strong></p>
-				<p>Your vote: <strong>No 👎</strong></p>
-				<div style="margin-top: 10px;">
-					<a class="button dim small" href="/vote/18">Edit vote</a>
+			{% for entry in submitted_votes.items %}
+				<div class="entry panel padded">
+					<h2>{{ entry.video.game }}</h2>
+					<p>Category: <strong>{{ entry.video.showreel.title }}</strong></p>
+					<p>Author: <strong>{{ entry.video.author_name }}</strong></p>
+					{% if entry.rating == 1 %}
+						<p>Your vote: <strong class="vote yes">Yes 👍</strong></p>
+					{% elif entry.rating == -1 %}
+						<p>Your vote: <strong class="vote no">No 👎</strong></p>
+					{% else %}
+						<!-- This should not happen -->
+						<p>Your vote: <strong>Skip ⏭️</strong></p>
+					{% endif %}
+					<div style="margin-top: 10px;">
+						<form action="{{ url_for('votes.vote_get', video_id=entry.video.id) }}" method="get" style="display:inline;">
+							<button type="submit" class="button dim small">Edit vote</button>
+						</form>
+						<form action="{{ url_for('votes.delete_vote', video_id=entry.video.id) }}" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this vote?\n\nThis video will show again in the showreel vote.');">
+							<button type="submit" class="button dim small">Delete vote</button>
+						</form>
+					</div>					
 				</div>
-			</div>
-
-			<div class="entry panel padded">
-				<h2>Space Adventure</h2>
-				<p>Category: <strong>2025 Godot Desktop/Console Games</strong></p>
-				<p>Author: <strong>Jane Smith</strong></p>
-				<p>Your vote: <strong>Skip ⏭️</strong></p>
-				<div style="margin-top: 10px;">
-					<a class="button dim small" href="/vote/25">Edit vote</a>
-				</div>
-			</div>
-
-			
+			{% endfor %}
 		</div>
-</div>
+		{% with elements=submitted_votes, request_url="votes.history", hx_target="#history", strategy="outerHTML" %}
+			{% include "pagination.html" with context %}
+		{% endwith %}
+	</div>
 </main>
