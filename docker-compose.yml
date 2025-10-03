@@ -37,7 +37,7 @@ configs:
       #!/usr/bin/env bash
       set -euo pipefail
       flask --app main db upgrade
-      flask --app main run --debug --host 0.0.0.0
+      gunicorn -b '0.0.0.0:5000' main:app
 
 volumes:
   mariadb_data:
