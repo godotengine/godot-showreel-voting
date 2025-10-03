@@ -14,3 +14,6 @@ venv/
 # db files
 instance/*
 !instance/example-config.py
+
+# Compose override
+compose.override.yaml
