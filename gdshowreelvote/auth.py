@@ -7,8 +7,8 @@ from authlib.integrations.flask_client import OAuth
 
 from gdshowreelvote.database import User, DB
 
-ADMIN_ROLE = 'admin'
-STAFF_ROLE = 'staff'
+ADMIN_ROLE = 'showreel-admin'
+STAFF_ROLE = 'showreel-staff'
 
 oauth = OAuth()
 
