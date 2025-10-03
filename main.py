@@ -5,6 +5,7 @@ from http.client import HTTPException
 import os
 import click
 from flask import Flask, current_app, g, render_template, session
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from gdshowreelvote import auth
 from gdshowreelvote.blueprints.votes import bp as votes_bp
@@ -147,6 +148,7 @@ def create_app(config=None):
             DB.session.commit()
             print(f'added {spamreader.line_num} videos')
     
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
     return app
 
 
