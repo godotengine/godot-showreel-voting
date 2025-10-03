@@ -8,7 +8,7 @@ from flask import Blueprint, Response, current_app, g, redirect, render_template
 from gdshowreelvote import auth
 from gdshowreelvote.blueprints.forms import VOTE_ACTIONS, CastVoteForm, SelectVideoForm
 from gdshowreelvote.database import DB, User, Video, Vote
-from gdshowreelvote.utils import choose_random_video, get_total_votes, vote_data
+from gdshowreelvote.utils import choose_random_video, get_total_votes, video_data, vote_data
 
 
 bp = Blueprint('votes', __name__)
@@ -30,6 +30,7 @@ def about():
 def before_you_vote():
 	content = render_template('before-you-vote.html')
 	return render_template('default.html', content = content, user=g.user)
+
 
 @bp.route('/vote', methods=['GET'])
 @bp.route('/vote/<int:video_id>', methods=['GET'])
@@ -163,3 +164,15 @@ def download_vote_results():
 	response = Response(csv_file.getvalue(), mimetype='text/csv')
 	response.headers["Content-Disposition"] = "attachment; filename=vote_results.csv"
 	return response
+
+
+@bp.route('/view/<int:video_id>', methods=['GET'])
+def video_view(video_id: int):
+	video = DB.session.query(Video).filter(Video.id == video_id).first()
+	if not video:
+		current_app.logger.warning(f"Video with ID {video_id} not found.")
+		return "Video not found", 404
+
+	data = video_data(video)
+	content = render_template('video-view.html', data=data)
+	return render_template('default.html', content = content, user=g.user, hide_nav=True)

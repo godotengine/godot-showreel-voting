@@ -48,7 +48,7 @@ def downvote_video(user: User, video: Video):
     return vote
 
 
-def _video_data(video: Video) -> Dict:
+def video_data(video: Video) -> Dict:
     data = {
             'id': video.id,
             'game': video.game,
@@ -68,7 +68,7 @@ def vote_data(user: User, video: Video) -> Tuple[Dict, Dict]:
     total_video_count = DB.session.query(Video).count()
     total_user_votes = DB.session.query(Vote).filter(Vote.user_id == user.id).count()
 
-    data = _video_data(video) if video else None
+    data = video_data(video) if video else None
 
     progress = {
 		'total': total_video_count, 

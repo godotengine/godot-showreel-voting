@@ -1,0 +1,117 @@
+<style>
+	iframe {
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		height: auto;
+		margin-bottom: -5px;
+	}
+	div.main {
+		max-width: 134vh;
+	}
+	.col-2 {
+		text-align: left;
+		display: grid;
+		margin: 20px 0px;
+		@media (min-width: 768px) {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+	.thank-you {
+		font-size: 1.3em;
+		padding: 41px 50px;
+		text-align: left;
+		margin: 0 auto;
+		h1 {
+			margin-bottom: 10px;
+		}
+	}
+	.progress {
+		@media (min-width: 768px) {
+			text-align: right;
+		}
+		a {
+			display: inline-block;
+			text-align: right;
+			font-size: 18px;
+			color: inherit;
+			opacity: 0.8;
+			text-decoration: none;
+			position: relative;
+    		top: 3px;
+			progress {
+				max-width: 190px;
+				margin-right: 0;
+				margin-left: auto;
+				position: relative;
+				top: -8px;
+			}
+		}
+		span {
+			display: block;
+		}
+	}
+	div.main.title {
+		margin-top: -20px;
+		margin-bottom: -15px;
+		padding-top: 10px;
+		max-width: 100%;
+		h1 {
+			max-width: 40ch;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			margin: 0 auto;
+			@media (min-width: 768px) {
+				text-align: center;
+				position: relative;
+				top: 4px;
+			}
+		}
+		.col-2 {
+			@media (min-width: 768px) {
+				grid-template-columns: 200px 1fr 200px;
+			}
+		}
+	}
+	.truncate {
+		max-width: 40ch;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+</style>
+<div id="vote-view">
+	<div style="background: black; color: white; margin-bottom: -20px; padding-bottom: 24px;">
+		<div class="main title">
+			<div class="col-2" style="margin-bottom: 0;">
+				<div>
+					<a href="/">
+						<img class="logo" src="/static/images/nav-logo.svg" alt="Godot Showreel Voting">
+					</a>
+				</div>
+				<h1 title="{{ data.game }}">{{ data.game }}</h1>
+			</div>
+		</div>
+	</div>
+
+	<div>
+		<div style="background: black; margin: 20px 0;">
+			<div class="main">
+				<iframe width="560" height="315" src="{{ data.youtube_embed }}?rel=0&autoplay=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+			</div>
+		</div>
+		<div class="main">
+			<div class="panel padded" style="margin-top: 10px;">
+				<h2>Submission info:</h2>
+				<div class="col-2">
+					<p class="truncate" title="{{ data.game }}">Project: <strong>{{ data.game }}</strong></p>
+					<p>Video Link: <a href="{{ data.video_link }}" target="_blank">{{ data.video_link }}</a></p>
+					<p>Author: <strong>{{ data.author }}</strong></p>
+					<p>Store Link: <a href="{{ data.store_link }}" target="_blank">{{ data.store_link }}</a></p>
+					<p>Category: <strong>{{ data.category }}</strong></p>
+					<p>Follow them: <a href="{{ data.follow_me_link }}" target="_blank">{{ data.follow_me_link }}</a></p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

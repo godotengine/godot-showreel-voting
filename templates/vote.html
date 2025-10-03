@@ -56,6 +56,11 @@
 		padding-top: 10px;
 		max-width: 100%;
 		h1 {
+			max-width: 40ch;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			margin: 0 auto;
 			@media (min-width: 768px) {
 				text-align: center;
 				position: relative;
@@ -67,6 +72,12 @@
 				grid-template-columns: 200px 1fr 200px;
 			}
 		}
+	}
+	.truncate {
+		max-width: 40ch;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
 	}
 </style>
 <div id="vote-view">
@@ -88,7 +99,7 @@
 							<img class="logo" src="/static/images/nav-logo.svg" alt="Godot Showreel Voting">
 						</a>
 					</div>
-					<h1>{{ data.game }}</h1>
+					<h1 title="{{ data.game }}">{{ data.game }}</h1>
 					<div style="display: grid; align-content: end;">
 						<div class="progress">
 							<a href="/history">
@@ -115,7 +126,7 @@
 							{{ cast_vote_form.csrf_token }}
 							{{ cast_vote_form.video_id(value=data.id, hidden=True) }}
 							<button id="downvote" type="submit" name="action" value="downvote" class="button tertiary" title="Shortcut: 'A' or 'Q' keys">No 👎</button>
-							<button id="skip" type="submit" name="action" value="skip" class="button dim" title="Shortcut: 'S' key">Skip ⏭️</button>
+							<button id="skip" type="submit" name="action" value="skip" class="button dim" title="Shortcut: 'S' key. You need to wait 3 seconds before skipping." disabled>Skip ⏭️</button>
 							<button id="upvote" type="submit" name="action" value="upvote" class="button primary" title="Shortcut: 'D' key">Yes 👍</button>
 						</div>
 					</form>
@@ -124,7 +135,7 @@
 				<div class="panel padded" style="margin-top: 10px;">
 					<h2>Submission info:</h2>
 					<div class="col-2">
-						<p>Project: <strong>{{ data.game }}</strong></p>
+						<p class="truncate" title="{{ data.game }}">Project: <strong>{{ data.game }}</strong></p>
 						<p>Video Link: <a href="{{ data.video_link }}" target="_blank">{{ data.video_link }}</a></p>
 						<p>Author: <strong>{{ data.author }}</strong></p>
 						<p>Store Link: <a href="{{ data.store_link }}" target="_blank">{{ data.store_link }}</a></p>
@@ -151,4 +162,11 @@
 			}
 		};
 	});
+</script>
+
+<script>
+	// enable skip button after 5 seconds
+	setTimeout(function() {
+		document.getElementById("skip").disabled = false;
+	}, 3000);
 </script>
