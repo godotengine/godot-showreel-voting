@@ -16,7 +16,7 @@ services:
         condition: service_healthy
 
   mariadb:
-    image: mariadb
+    image: docker.io/mariadb
     volumes:
       - mariadb_data:/var/lib/mysql
     environment:
