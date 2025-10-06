@@ -8,7 +8,7 @@ from flask import Blueprint, Response, current_app, g, redirect, render_template
 from gdshowreelvote import auth
 from gdshowreelvote.blueprints.forms import VOTE_ACTIONS, CastVoteForm, SelectVideoForm
 from gdshowreelvote.database import DB, User, Video, Vote
-from gdshowreelvote.utils import choose_random_video, get_total_votes, vote_data
+from gdshowreelvote.utils import choose_random_video, get_total_votes, video_data, vote_data
 
 
 bp = Blueprint('votes', __name__)
@@ -30,6 +30,7 @@ def about():
 def before_you_vote():
 	content = render_template('before-you-vote.html')
 	return render_template('default.html', content = content, user=g.user)
+
 
 @bp.route('/vote', methods=['GET'])
 @bp.route('/vote/<int:video_id>', methods=['GET'])
@@ -54,7 +55,6 @@ def vote_get(video_id=None):
 def vote():
 	cast_vote_form = CastVoteForm()
 	select_specific_video_form = SelectVideoForm()
-	skip_videos = []
 	if cast_vote_form.validate():
 		action = cast_vote_form.action.data
 		video = DB.session.query(Video).filter(Video.id == cast_vote_form.video_id.data).first()
@@ -62,13 +62,11 @@ def vote():
 			current_app.logger.warning(f"Video with ID {cast_vote_form.video_id.data} not found.")
 			return "Video not found", 404
 		VOTE_ACTIONS[action](g.user, video)
-		if action == 'skip':
-			skip_videos.append(video.id)
 	else:
 		current_app.logger.warning(f"Form validation failed: {cast_vote_form.errors} {select_specific_video_form.errors}")
 		return "Invalid form submission", 400
 
-	video = choose_random_video(g.user, skip_videos)
+	video = choose_random_video(g.user)
 	data, progress = vote_data(g.user, video)
 
 	return render_template('vote.html', data=data, progress=progress, cast_vote_form=cast_vote_form, select_specific_video_form=select_specific_video_form)
@@ -116,10 +114,9 @@ def history():
 @bp.route('/admin')
 @auth.admin_required
 def admin_view():
-	page = int(request.args.get('page', 1))
-	vote_tally = get_total_votes(page)
+	total_votes, positive_votes, vote_tally = get_total_votes()
 
-	content = render_template('admin.html', vote_tally=vote_tally)
+	content = render_template('admin.html', vote_tally=vote_tally, total_votes=total_votes, positive_votes=positive_votes)
 	if request.args.get('page'):
 		return content
 	return render_template('default.html', content = content, user=g.user)
@@ -163,3 +160,15 @@ def download_vote_results():
 	response = Response(csv_file.getvalue(), mimetype='text/csv')
 	response.headers["Content-Disposition"] = "attachment; filename=vote_results.csv"
 	return response
+
+
+@bp.route('/view/<int:video_id>', methods=['GET'])
+def video_view(video_id: int):
+	video = DB.session.query(Video).filter(Video.id == video_id).first()
+	if not video:
+		current_app.logger.warning(f"Video with ID {video_id} not found.")
+		return "Video not found", 404
+
+	data = video_data(video)
+	content = render_template('video-view.html', data=data)
+	return render_template('default.html', content = content, user=g.user, hide_nav=True)

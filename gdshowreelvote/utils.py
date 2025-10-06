@@ -21,6 +21,19 @@ def choose_random_video(user: User, skip_videos: List[int]=[]) -> Video:
         .first()
     )
 
+    if random_video_without_votes is None:
+        # If all videos have been voted on, return a random video that was skipped
+        random_video_without_votes = (
+            DB.session.query(Video)
+            .join(Showreel, Video.showreel_id == Showreel.id)  # join explicitly
+            .outerjoin(Vote, and_(Video.id == Vote.video_id, Vote.user_id == user.id))
+            .filter(Showreel.status == ShowreelStatus.VOTE)  # filter on Showreel column
+            .filter(Vote.rating == 0)  # check votes with rating 0 (skipped)
+            .filter(Video.id.notin_(skip_videos))  # exclude skipped videos
+            .order_by(func.random())
+            .first()
+        )
+
     return random_video_without_votes
 
 
@@ -48,7 +61,18 @@ def downvote_video(user: User, video: Video):
     return vote
 
 
-def _video_data(video: Video) -> Dict:
+def skip_video(user: User, video: Video):
+    vote = DB.session.query(Vote).filter(and_(Vote.user_id == user.id, Vote.video_id == video.id)).first()
+    if vote:
+        vote.rating = 0
+    else:
+        vote = Vote(user_id=user.id, video_id=video.id, rating=0)
+        DB.session.add(vote)
+    DB.session.commit()
+    return vote
+
+
+def video_data(video: Video) -> Dict:
     data = {
             'id': video.id,
             'game': video.game,
@@ -68,7 +92,7 @@ def vote_data(user: User, video: Video) -> Tuple[Dict, Dict]:
     total_video_count = DB.session.query(Video).count()
     total_user_votes = DB.session.query(Vote).filter(Vote.user_id == user.id).count()
 
-    data = _video_data(video) if video else None
+    data = video_data(video) if video else None
 
     progress = {
 		'total': total_video_count, 
@@ -78,8 +102,10 @@ def vote_data(user: User, video: Video) -> Tuple[Dict, Dict]:
     return data, progress
 
 
-def get_total_votes(page: int) -> List[Tuple[Video, int, int]]:
-    query = (
+def get_total_votes() -> Tuple[int, int, List[Tuple[Video, int, int]]]:
+    total_votes = DB.session.query(func.count(Vote.id)).filter(Vote.rating != 0).scalar()
+    positive_votes = DB.session.query(func.count(Vote.id)).filter(Vote.rating == 1).scalar()
+    results = (
         DB.session.query(
             Video,
             func.coalesce(func.sum(Vote.rating), 0).label("vote_sum"),
@@ -88,14 +114,10 @@ def get_total_votes(page: int) -> List[Tuple[Video, int, int]]:
         .outerjoin(Vote, Vote.video_id == Video.id)
         .group_by(Video.id)
         .order_by(func.coalesce(func.sum(Vote.rating), 0).desc())
+        .all()
     )
 
-    try:
-        results = query.paginate(page=page, per_page=30)
-    except NotFound:
-        results = query.paginate(page=1, per_page=30)
-
-    return results
+    return total_votes, positive_votes, results
 
 
 def parse_youtuvbe_video_id(yt_url: str) -> Optional[str]:

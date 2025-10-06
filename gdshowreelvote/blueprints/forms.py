@@ -3,13 +3,13 @@ from flask_wtf import FlaskForm
 from wtforms import IntegerField, StringField, ValidationError
 from wtforms.validators import InputRequired
 
-from gdshowreelvote.utils import downvote_video, upvote_video
+from gdshowreelvote.utils import downvote_video, skip_video, upvote_video
 
 
 VOTE_ACTIONS = {
     'upvote': upvote_video,
     'downvote': downvote_video,
-    'skip': lambda *args: None
+    'skip': skip_video
 }
 
 def validate_action(form, field):
