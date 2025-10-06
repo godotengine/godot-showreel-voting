@@ -55,7 +55,6 @@ def vote_get(video_id=None):
 def vote():
 	cast_vote_form = CastVoteForm()
 	select_specific_video_form = SelectVideoForm()
-	skip_videos = []
 	if cast_vote_form.validate():
 		action = cast_vote_form.action.data
 		video = DB.session.query(Video).filter(Video.id == cast_vote_form.video_id.data).first()
@@ -63,13 +62,11 @@ def vote():
 			current_app.logger.warning(f"Video with ID {cast_vote_form.video_id.data} not found.")
 			return "Video not found", 404
 		VOTE_ACTIONS[action](g.user, video)
-		if action == 'skip':
-			skip_videos.append(video.id)
 	else:
 		current_app.logger.warning(f"Form validation failed: {cast_vote_form.errors} {select_specific_video_form.errors}")
 		return "Invalid form submission", 400
 
-	video = choose_random_video(g.user, skip_videos)
+	video = choose_random_video(g.user)
 	data, progress = vote_data(g.user, video)
 
 	return render_template('vote.html', data=data, progress=progress, cast_vote_form=cast_vote_form, select_specific_video_form=select_specific_video_form)

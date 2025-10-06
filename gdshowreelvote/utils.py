@@ -48,6 +48,17 @@ def downvote_video(user: User, video: Video):
     return vote
 
 
+def skip_video(user: User, video: Video):
+    vote = DB.session.query(Vote).filter(and_(Vote.user_id == user.id, Vote.video_id == video.id)).first()
+    if vote:
+        vote.rating = 0
+    else:
+        vote = Vote(user_id=user.id, video_id=video.id, rating=0)
+        DB.session.add(vote)
+    DB.session.commit()
+    return vote
+
+
 def video_data(video: Video) -> Dict:
     data = {
             'id': video.id,
@@ -79,7 +90,7 @@ def vote_data(user: User, video: Video) -> Tuple[Dict, Dict]:
 
 
 def get_total_votes() -> Tuple[int, int, List[Tuple[Video, int, int]]]:
-    total_votes = DB.session.query(func.count(Vote.id)).scalar()
+    total_votes = DB.session.query(func.count(Vote.id)).filter(Vote.rating != 0).scalar()
     positive_votes = DB.session.query(func.count(Vote.id)).filter(Vote.rating == 1).scalar()
     results = (
         DB.session.query(
