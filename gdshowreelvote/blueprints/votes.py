@@ -1,6 +1,6 @@
 import csv
 from io import StringIO
-from sqlalchemy import func
+from sqlalchemy import case, func
 from werkzeug.exceptions import NotFound
 
 from flask import Blueprint, Response, current_app, g, redirect, render_template, request, url_for
@@ -131,10 +131,10 @@ def download_vote_results():
 	result = (
         DB.session.query(
             Video,
-            func.count(Vote.id).filter(Vote.rating == 1).label("plus_votes"),
-			func.count(Vote.id).filter(Vote.rating == -1).label("minus_votes"),
-			func.count(Vote.id).filter((User.is_staff == True)).label("staff_votes"),
-			func.count(Vote.id).filter((User.is_fund_member == True)).label("fund_member_votes"),
+            func.sum(case((Vote.rating == 1, 1), else_=0)).label("plus_votes"),
+			func.sum(case((Vote.rating == -1, 1), else_=0)).label("minus_votes"),
+			func.sum(case((User.is_staff == True, 1), else_=0)).label("staff_votes"),
+			func.sum(case((User.is_fund_member == True, 1), else_=0)).label("fund_member_votes"),
         )
         .outerjoin(Vote, Vote.video_id == Video.id)
 		.outerjoin(User, User.id == Vote.user_id)
