@@ -117,10 +117,9 @@ def history():
 @bp.route('/admin')
 @auth.admin_required
 def admin_view():
-	page = int(request.args.get('page', 1))
-	vote_tally = get_total_votes(page)
+	total_votes, positive_votes, vote_tally = get_total_votes()
 
-	content = render_template('admin.html', vote_tally=vote_tally)
+	content = render_template('admin.html', vote_tally=vote_tally, total_votes=total_votes, positive_votes=positive_votes)
 	if request.args.get('page'):
 		return content
 	return render_template('default.html', content = content, user=g.user)

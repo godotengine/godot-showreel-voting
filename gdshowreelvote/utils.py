@@ -78,8 +78,10 @@ def vote_data(user: User, video: Video) -> Tuple[Dict, Dict]:
     return data, progress
 
 
-def get_total_votes(page: int) -> List[Tuple[Video, int, int]]:
-    query = (
+def get_total_votes() -> Tuple[int, int, List[Tuple[Video, int, int]]]:
+    total_votes = DB.session.query(func.count(Vote.id)).scalar()
+    positive_votes = DB.session.query(func.count(Vote.id)).filter(Vote.rating == 1).scalar()
+    results = (
         DB.session.query(
             Video,
             func.coalesce(func.sum(Vote.rating), 0).label("vote_sum"),
@@ -88,14 +90,10 @@ def get_total_votes(page: int) -> List[Tuple[Video, int, int]]:
         .outerjoin(Vote, Vote.video_id == Video.id)
         .group_by(Video.id)
         .order_by(func.coalesce(func.sum(Vote.rating), 0).desc())
+        .all()
     )
 
-    try:
-        results = query.paginate(page=page, per_page=30)
-    except NotFound:
-        results = query.paginate(page=1, per_page=30)
-
-    return results
+    return total_votes, positive_votes, results
 
 
 def parse_youtuvbe_video_id(yt_url: str) -> Optional[str]:
