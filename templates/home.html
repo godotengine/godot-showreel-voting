@@ -41,6 +41,10 @@
 			<p style="margin-top: 20px;">
 				<a href="https://fund.godotengine.org" class="button">Sign Up</a>
 			</p>
+            <p style="margin-top: 20px;">
+                <strong>Already a fund member?</strong><br>
+                If you became a member recently, try to <a href="{{ url_for('oidc.logout') }}">logout</a> and then log in again. Also make sure that you use the same account as you used on the fund page!
+            </p>
 		{% endif %}
 	{% else %}
 	<hr>
