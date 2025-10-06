@@ -21,6 +21,19 @@ def choose_random_video(user: User, skip_videos: List[int]=[]) -> Video:
         .first()
     )
 
+    if random_video_without_votes is None:
+        # If all videos have been voted on, return a random video that was skipped
+        random_video_without_votes = (
+            DB.session.query(Video)
+            .join(Showreel, Video.showreel_id == Showreel.id)  # join explicitly
+            .outerjoin(Vote, and_(Video.id == Vote.video_id, Vote.user_id == user.id))
+            .filter(Showreel.status == ShowreelStatus.VOTE)  # filter on Showreel column
+            .filter(Vote.rating == 0)  # check votes with rating 0 (skipped)
+            .filter(Video.id.notin_(skip_videos))  # exclude skipped videos
+            .order_by(func.random())
+            .first()
+        )
+
     return random_video_without_votes
 
 
