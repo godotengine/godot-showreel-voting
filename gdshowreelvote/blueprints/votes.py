@@ -138,8 +138,8 @@ def download_vote_results():
             Video,
             func.sum(case((Vote.rating == 1, 1), else_=0)).label("plus_votes"),
 			func.sum(case((Vote.rating == -1, 1), else_=0)).label("minus_votes"),
-			func.sum(case((User.is_staff == True, 1), else_=0)).label("staff_votes"),
-			func.sum(case((User.is_fund_member == True, 1), else_=0)).label("fund_member_votes"),
+			func.sum(case((User.is_staff == True, 1), (Vote.rating != 0), else_=0)).label("staff_votes"),
+			func.sum(case((User.is_fund_member == True, 1), (Vote.rating != 0), else_=0)).label("fund_member_votes"),
         )
         .outerjoin(Vote, Vote.video_id == Video.id)
 		.outerjoin(User, User.id == Vote.user_id)
