@@ -41,5 +41,14 @@
                 <span class="ellipsis">…</span>
             {% endif %}
         {% endfor %}
+        <button
+            class="button small secondary"
+            type="button"
+            hx-get="{{ url_for(request_url, limit='all') }}"
+            hx-target="{{ hx_target }}"
+            hx-swap="{{ strategy }} show:window:top"
+        >
+            Show all
+        </button>
     </div>
 {% endif %}

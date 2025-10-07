@@ -89,6 +89,7 @@ def delete_vote(video_id: int):
 @bp.route('/history')
 @auth.vote_role_required
 def history():
+	limit = request.args.get('limit')
 	page = int(request.args.get('page', 1))
 	total_video_count = DB.session.query(Video).count()
 	total_user_votes = DB.session.query(Vote).filter(Vote.user_id == g.user.id).count()
@@ -98,15 +99,22 @@ def history():
 	}
 	query = DB.session.query(Vote).filter(Vote.user_id == g.user.id).order_by(Vote.created_at.desc())
 
+	if limit == 'all':
+		total_results = query.count()
+		per_page = total_results if total_results > 0 else 1
+	else:
+		per_page = 30
+	
 	try:
-		submitted_votes = DB.paginate(query, page=page, per_page=30)
+		submitted_votes = DB.paginate(query, page=page, per_page=per_page)
 	except NotFound:
-		submitted_votes = DB.paginate(query, page=1, per_page=30)
+		submitted_votes = DB.paginate(query, page=1, per_page=per_page)
 
 
 	#  We probably want to add pagination here
 	content = render_template('history.html', progress=progress, submitted_votes=submitted_votes)
-	if request.args.get('page'):
+
+	if request.args.get('page') or request.args.get('limit'):
 		return content
 	return render_template('default.html', content = content, user=g.user)
 

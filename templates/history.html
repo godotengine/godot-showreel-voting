@@ -29,8 +29,7 @@
 	<h1 style="margin-bottom: 20px;">Vote history</h1>
 	<div>
 		<p>You have voted {{ progress.current }} out of {{ progress.total }} entries. {% if progress.current != progress.total %}<a href="/vote">Continue voting</a>.{% endif %}</p>
-
-		<div class="entries">
+		<div class="entries">	
 			<!-- Items should be sorted by what you Voted last in chronological order -->
 			<!-- This should be a loop -->
 			{% for entry in submitted_votes.items %}
@@ -43,7 +42,6 @@
 					{% elif entry.rating == -1 %}
 						<p>Your vote: <strong class="vote no">No 👎</strong></p>
 					{% else %}
-						<!-- This should not happen -->
 						<p>Your vote: <strong>Skip ⏭️</strong></p>
 					{% endif %}
 					<div style="margin-top: 10px;">

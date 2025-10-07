@@ -1,4 +1,3 @@
-from typing import Optional
 from flask_wtf import FlaskForm
 from wtforms import IntegerField, StringField, ValidationError
 from wtforms.validators import InputRequired
