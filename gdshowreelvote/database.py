@@ -1,6 +1,7 @@
 from datetime import datetime
 import enum
-from typing import List
+from typing import List, Optional
+from urllib.parse import parse_qs, urlparse
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Boolean, Column, DateTime, Enum, ForeignKey, Integer, MetaData, String, Table
@@ -76,7 +77,30 @@ class Video(DB.Model):
     showreel = relationship("Showreel", back_populates="videos")
     author = relationship("User", back_populates="videos")
     votes = relationship("Vote", back_populates="video", cascade="all, delete-orphan")
-    
+
+    def parse_youtube_video_id(self) -> Optional[str]:
+        """
+            Source: https://stackoverflow.com/questions/4356538/how-can-i-extract-video-id-from-youtubes-link-in-python/7936523#7936523
+            Examples:
+            - http://youtu.be/SA2iWivDJiE
+            - http://www.youtube.com/watch?v=_oPAwA_Udwc&feature=feedu
+            - http://www.youtube.com/embed/SA2iWivDJiE
+            - http://www.youtube.com/v/SA2iWivDJiE?version=3&amp;hl=en_US
+        """
+        query = urlparse(self.video_link)
+        if query.hostname == 'youtu.be':
+            return query.path[1:]
+        if query.hostname in ('www.youtube.com', 'youtube.com', 'm.youtube.com'):
+            if query.path == '/watch':
+                p = parse_qs(query.query)
+                return p['v'][0]
+            if query.path[:7] == '/embed/':
+                return query.path.split('/')[2]
+            if query.path[:3] == '/v/':
+                return query.path.split('/')[2]
+        # fail?
+        return None
+
 
 class Vote(DB.Model):
     __tablename__ = "votes"

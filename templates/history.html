@@ -34,7 +34,8 @@
 			<!-- This should be a loop -->
 			{% for entry in submitted_votes.items %}
 				<div class="entry panel padded">
-					<h2>{{ entry.video.game }}</h2>
+					<h2 style="text-align: center;">{{ entry.video.game }}</h2>
+					<img style="margin: auto;" src="https://img.youtube.com/vi/{{ entry.video.parse_youtube_video_id() }}/default.jpg" alt="Video thumbnail">
 					<p>Category: <strong>{{ entry.video.showreel.title }}</strong></p>
 					<p>Author: <strong>{{ entry.video.author_name }}</strong></p>
 					{% if entry.rating == 1 %}

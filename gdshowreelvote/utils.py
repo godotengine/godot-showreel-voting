@@ -81,10 +81,9 @@ def video_data(video: Video) -> Dict:
             'video_link': video.video_link,
             'store_link': video.store_link,
             'category': video.showreel.title,
+            'youtube_embed': f'https://www.youtube.com/embed/{video.parse_youtube_video_id()}'
         }
 
-    youtube_id = parse_youtuvbe_video_id(video.video_link)
-    data['youtube_embed'] = f'https://www.youtube.com/embed/{youtube_id}'
     return data
 
 
@@ -118,27 +117,3 @@ def get_total_votes() -> Tuple[int, int, List[Tuple[Video, int, int]]]:
     )
 
     return total_votes, positive_votes, results
-
-
-def parse_youtuvbe_video_id(yt_url: str) -> Optional[str]:
-    """
-        Source: https://stackoverflow.com/questions/4356538/how-can-i-extract-video-id-from-youtubes-link-in-python/7936523#7936523
-        Examples:
-        - http://youtu.be/SA2iWivDJiE
-        - http://www.youtube.com/watch?v=_oPAwA_Udwc&feature=feedu
-        - http://www.youtube.com/embed/SA2iWivDJiE
-        - http://www.youtube.com/v/SA2iWivDJiE?version=3&amp;hl=en_US
-    """
-    query = urlparse(yt_url)
-    if query.hostname == 'youtu.be':
-        return query.path[1:]
-    if query.hostname in ('www.youtube.com', 'youtube.com', 'm.youtube.com'):
-        if query.path == '/watch':
-            p = parse_qs(query.query)
-            return p['v'][0]
-        if query.path[:7] == '/embed/':
-            return query.path.split('/')[2]
-        if query.path[:3] == '/v/':
-            return query.path.split('/')[2]
-    # fail?
-    return None
