@@ -4,19 +4,42 @@
 		display: grid;
 		gap: 20px;
 		@media (min-width: 768px) {
+			grid-template-columns: 1fr 1fr;
+		}
+		@media (min-width: 1200px) {
 			grid-template-columns: 1fr 1fr 1fr;
 		}
 	}
 	.entry {
-		display: grid;
-		grid-template-columns: 1fr;
+		.info {
+			display: grid;
+			margin-bottom: 5px;
+			gap: 10px;
+			@media (min-width: 768px) {
+				grid-template-columns: 120px 1fr;
+
+			}
+			.category {
+				font-size: 12px;
+				margin: 4px 0px;
+			}
+		}
+		.image-container {
+			border-radius: 6px;
+  		overflow: hidden;
+			img {
+				max-width: 100%;
+				margin-bottom: -15px;
+  			margin-top: -11px;
+			}
+		}
 	}
 	.vote {
 		background: #48ec2563;
 		border-radius: 6px;
 		padding: 2px 8px;
 		display: inline-block;
-		margin-top: 4px;
+		margin-top: 5px;
 		&.yes {
 			background: #48ec2563;
 		}
@@ -34,27 +57,35 @@
 			<!-- This should be a loop -->
 			{% for entry in submitted_votes.items %}
 				<div class="entry panel padded">
-					<h2 style="text-align: center;">{{ entry.video.game }}</h2>
-					<img style="margin: auto;" src="https://img.youtube.com/vi/{{ entry.video.parse_youtube_video_id() }}/default.jpg" alt="Video thumbnail">
-					<p>Category: <strong>{{ entry.video.showreel.title }}</strong></p>
-					<p>Author: <strong>{{ entry.video.author_name }}</strong></p>
-					{% if entry.rating == 1 %}
-						<p>Your vote: <strong class="vote yes">Yes 👍</strong></p>
-					{% elif entry.rating == -1 %}
-						<p>Your vote: <strong class="vote no">No 👎</strong></p>
-					{% else %}
-						<p>Your vote: <strong>Skip ⏭️</strong></p>
-					{% endif %}
-					<div style="margin-top: 10px;">
-						<a href="{{url_for('votes.vote_get', video_id=entry.video.id) }}" style="text-decoration: none;">
-							<form action="{{ url_for('votes.vote_get', video_id=entry.video.id) }}" method="get" style="display:inline;">
-								<button type="submit" class="button dim small">Edit vote</button>
-							</form>
-						</a>
-						<form action="{{ url_for('votes.delete_vote', video_id=entry.video.id) }}" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this vote?\n\nThis video will show again in the showreel vote.');">
-							<button type="submit" class="button dim small">Delete vote</button>
-						</form>
-					</div>					
+					<div class="info">
+						<div>
+							<div class="image-container">
+								<img src="https://img.youtube.com/vi/{{ entry.video.parse_youtube_video_id() }}/default.jpg" alt="Video thumbnail">
+							</div>
+						</div>
+						<div>
+							<h2>{{ entry.video.game }}</h2>
+							<p><strong>{{ entry.video.author_name }}</strong></p>
+							<p class="category">{{ entry.video.showreel.title }}</p>
+							{% if entry.rating == 1 %}
+								<p>Your vote: <strong class="vote yes">Yes 👍</strong></p>
+							{% elif entry.rating == -1 %}
+								<p>Your vote: <strong class="vote no">No 👎</strong></p>
+							{% else %}
+								<p>Your vote: <strong>Skip ⏭️</strong></p>
+							{% endif %}
+							<div>
+								<a href="{{url_for('votes.vote_get', video_id=entry.video.id) }}" style="text-decoration: none;">
+									<form action="{{ url_for('votes.vote_get', video_id=entry.video.id) }}" method="get" style="display:inline;">
+										<button type="submit" class="button dim small">Edit vote</button>
+									</form>
+								</a>
+								<form action="{{ url_for('votes.delete_vote', video_id=entry.video.id) }}" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this vote?\n\nThis video will show again in the showreel vote.');">
+									<button type="submit" class="button dim small">Delete vote</button>
+								</form>
+							</div>					
+						</div>
+					</div>
 				</div>
 			{% endfor %}
 		</div>
