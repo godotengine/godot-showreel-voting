@@ -78,7 +78,7 @@
 							{% endif %}
 							<div>
 								<a href="{{url_for('votes.vote_get', video_id=entry.video.id) }}" style="text-decoration: none;">
-									<form action="{{ url_for('votes.vote_get', video_id=entry.video.id) }}" method="get" style="display:inline;">
+									<form action="{{ url_for('votes.vote_get', video_id=entry.video.id) }}" method="get" style="display:inline-block; margin-top: 10px;">
 										<button type="submit" class="button dim small">Edit vote</button>
 									</form>
 								</a>
