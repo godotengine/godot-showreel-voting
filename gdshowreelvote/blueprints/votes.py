@@ -8,7 +8,7 @@ from flask import Blueprint, Response, current_app, g, redirect, render_template
 from gdshowreelvote import auth
 from gdshowreelvote.blueprints.forms import VOTE_ACTIONS, CastVoteForm, SelectVideoForm
 from gdshowreelvote.database import DB, User, Video, Vote
-from gdshowreelvote.utils import choose_random_video, get_total_votes, video_data, vote_data
+from gdshowreelvote.utils import choose_random_video, get_total_votes, video_data, vote_data, voting_possible
 
 
 bp = Blueprint('votes', __name__)
@@ -36,6 +36,8 @@ def before_you_vote():
 @bp.route('/vote/<int:video_id>', methods=['GET'])
 @auth.vote_role_required
 def vote_get(video_id=None):
+	if not voting_possible():
+		return redirect(url_for('votes.home'))
 	if video_id:
 		video = DB.session.query(Video).filter(Video.id == video_id).first()
 		if not video:
@@ -53,6 +55,8 @@ def vote_get(video_id=None):
 @bp.route('/vote', methods=['POST'])
 @auth.vote_role_required
 def vote():
+	if not voting_possible():
+		return redirect(url_for('votes.home'))
 	cast_vote_form = CastVoteForm()
 	select_specific_video_form = SelectVideoForm()
 	if cast_vote_form.validate():
@@ -75,6 +79,8 @@ def vote():
 @bp.route('/vote/<int:video_id>/delete', methods=['POST'])
 @auth.vote_role_required
 def delete_vote(video_id: int):
+	if not voting_possible():
+		return redirect(url_for('votes.home'))
 	vote = DB.session.query(Vote).filter(Vote.user_id == g.user.id).filter(Vote.video_id == video_id).first()
 	if not vote:
 		current_app.logger.warning(f"Video with ID {video_id} not found.")
@@ -89,6 +95,8 @@ def delete_vote(video_id: int):
 @bp.route('/history')
 @auth.vote_role_required
 def history():
+	if not voting_possible():
+		return redirect(url_for('votes.home'))
 	limit = request.args.get('limit')
 	page = int(request.args.get('page', 1))
 	total_video_count = DB.session.query(Video).count()

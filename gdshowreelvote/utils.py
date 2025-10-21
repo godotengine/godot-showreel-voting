@@ -117,3 +117,7 @@ def get_total_votes() -> Tuple[int, int, List[Tuple[Video, int, int]]]:
     )
 
     return total_votes, positive_votes, results
+
+
+def voting_possible() -> bool:
+    return DB.session.query(Showreel).where(Showreel.status==ShowreelStatus.VOTE).count() > 0
