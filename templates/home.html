@@ -21,6 +21,39 @@
 </style>
 <main>
 <div class="panel padded">
+	{% comment %}
+		<!-- During the voting period -->
+		{% if user %}
+			{% if user.can_vote() %}
+			<p>Cast your votes until <strong>October 20th</strong> 📅</p>
+			<ul>
+				<li>Videos are presented in random order, and scores are hidden until the voting period ends</li>
+				<li>Your votes are anonymous</li>
+				<li>You can change your votes until the voting period ends</li>
+				<li>We encourage you to vote for as many entries as you can</li>
+				<li>If you found any issue or if you have a suggestion, please create an issue in our <a href="https://github.com/godotengine/godot-showreel-voting/issues">issue tracker</a></li>
+			</ul>
+		
+			<p style="margin: 20px 0;">Happy voting!</p>		
+			<a class="button primary" id="vote-link" href="/vote">Start Voting</a> <a class="button dim" href="/history">History</a>
+			{% else %}
+				<p>Only Godot Engine maintainers or members of the Development Fund can vote.</p>
+				<p>If you would like to participate in the process, make sure to sign up to <a href="https://fund.godotengine.org">the Development Fund</a>.</p>
+				<p style="margin-top: 20px;">
+					<a href="https://fund.godotengine.org" class="button">Sign Up</a>
+				</p>
+							<p style="margin-top: 20px;">
+									<strong>Already a fund member?</strong><br>
+									If you became a member recently, try to <a href="{{ url_for('oidc.logout') }}">logout</a> and then log in again. Also make sure that you use the same account as you used on the fund page!
+							</p>
+			{% endif %}
+		{% else %}
+		<hr>
+			You need to be logged in to vote:
+			<a href="/login" class="button dim small">Log In</a>
+		{% endif %}
+	{% endcomment %}
+
 	<h1>Welcome!</h1>
 	<p>The voting period for this years showreel videos has finished.</p>
 	<p style="margin: 20px 0;">Thank you to everyone who participated!</p>
