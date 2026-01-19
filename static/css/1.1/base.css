@@ -237,3 +237,7 @@ textarea {
 		}
 	}
 }
+
+p.error {
+	color: #f65994;
+}

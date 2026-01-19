@@ -19,6 +19,8 @@ services:
     image: docker.io/mariadb
     volumes:
       - mariadb_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
     environment:
       MARIADB_DATABASE: showreel
       MARIADB_USER: showreel

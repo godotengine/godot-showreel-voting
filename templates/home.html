@@ -20,8 +20,29 @@
 	}
 </style>
 <main>
-<div class="panel padded">
-	{% comment %}
+	{% if submission_success %}
+		<div class="panel padded">
+			<h2>Thank you for your submission!</h2>
+			<p>Your entry has been received, voting will start on <strong>?????</strong> 📅</p>
+		</div>
+	{% endif %}
+	<div class="panel padded" style="margin-top: 20px;">
+		<!-- During the submission period -->
+		{% if user %}
+			{% if submission_success %}
+				<p>You can submit multiple entries until <strong>?????</strong> 📅</p>
+			{% else %}
+				<p>Submit your game for the Godot showreel until <strong>?????</strong> 📅</p>
+			{% endif %}
+		 	<a class="button primary" href="/submit">Submit entry</a>
+		{% else %}
+			You need to be logged in to submit an entry:
+			<a href="/login" class="button dim small">Log In</a>
+		{% endif %}
+
+	</div>
+
+	<div class="panel padded" style="margin-top: 20px;">
 		<!-- During the voting period -->
 		{% if user %}
 			{% if user.can_vote() %}
@@ -52,21 +73,20 @@
 			You need to be logged in to vote:
 			<a href="/login" class="button dim small">Log In</a>
 		{% endif %}
-	{% endcomment %}
 
-	<h1>Welcome!</h1>
-	<p>The voting period for this years showreel videos has finished.</p>
-	<p style="margin: 20px 0;">Thank you to everyone who participated!</p>
-</div>
-
-
-<div class="panel padded" style="margin-top: 20px;">
-	<h2>Previous editions:<span><a href="https://www.youtube.com/playlist?list=PLeG_dAglpVo6EpaO9A1nkwJZOwrfiLdQ8">(View all)</a></span></h2>
-	<div class="grid-2" style="margin-top: 10px;">
-		<iframe width="560" height="315" src="https://www.youtube.com/embed/n1Lon_Q2T18" frameborder="0" allowfullscreen="" style="width:100%;aspect-ratio:16/9;height:auto; border-radius: 11px;"></iframe>
-		<iframe width="560" height="315" src="https://www.youtube.com/embed/W1_zKxYEP6Q" frameborder="0" allowfullscreen="" style="width:100%;aspect-ratio:16/9;height:auto; border-radius: 11px;"></iframe>
+		<h1>Welcome!</h1>
+		<p>The voting period for this years showreel videos has finished.</p>
+		<p style="margin: 20px 0;">Thank you to everyone who participated!</p>
 	</div>
-</div>
+
+
+	<div class="panel padded" style="margin-top: 20px;">
+		<h2>Previous editions:<span><a href="https://www.youtube.com/playlist?list=PLeG_dAglpVo6EpaO9A1nkwJZOwrfiLdQ8">(View all)</a></span></h2>
+		<div class="grid-2" style="margin-top: 10px;">
+			<iframe width="560" height="315" src="https://www.youtube.com/embed/n1Lon_Q2T18" frameborder="0" allowfullscreen="" style="width:100%;aspect-ratio:16/9;height:auto; border-radius: 11px;"></iframe>
+			<iframe width="560" height="315" src="https://www.youtube.com/embed/W1_zKxYEP6Q" frameborder="0" allowfullscreen="" style="width:100%;aspect-ratio:16/9;height:auto; border-radius: 11px;"></iframe>
+		</div>
+	</div>
 
 </main>
 

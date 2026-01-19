@@ -1,0 +1,54 @@
+<main id="submission-form">
+    <div>
+        <h1>Showreel Submission</h1>
+        <p>Fill in the form to submit your video for the Godot Showreel.</p>
+    </div>
+    <hr>
+    <form method="POST" enctype="multipart/form-data" hx-post="{{ url_for("votes.post_submit", _method='POST') }}" hx-target='#submission-form' hx-swap='outerHTML'>
+        {{ form.csrf_token }}
+
+        {{ form.game.label }}<br>
+        {{ form.game(size=100) }}<br>
+        {% for error in form.game.errors %}
+            <p class="error">{{ error }}</p>
+        {% endfor %}<br>
+
+        {{ form.author_name.label }}<br>
+        {{ form.author_name(size=100) }}<br>
+        {% for error in form.author_name.errors %}
+            <p class="error">{{ error }}</p>
+        {% endfor %}<br>
+
+        {{ form.contact_email.label }}<br>
+        {{ form.contact_email(size=100) }}<br>
+        {% for error in form.contact_email.errors %}
+            <p class="error">{{ error }}</p>
+        {% endfor %}<br>
+
+        {{ form.video_link.label }}<br>
+        {{ form.video_link(size=100) }}<br>
+        {% for error in form.video_link.errors %}
+            <p class="error">{{ error }}</p>
+        {% endfor %}<br>
+
+        {{ form.video_download_link.label }}<br>
+        {{ form.video_download_link(size=100) }}<br>
+        {% for error in form.video_download_link.errors %}
+            <p class="error">{{ error }}</p>
+        {% endfor %}<br>
+
+        {{ form.follow_me_link.label }}<br>
+        {{ form.follow_me_link(size=100) }}<br>
+        {% for error in form.follow_me_link.errors %}
+            <p class="error">{{ error }}</p>
+        {% endfor %}<br>
+
+        {{ form.store_link.label }}<br>
+        {{ form.store_link(size=100) }}<br>
+        {% for error in form.store_link.errors %}
+            <p class="error">{{ error }}</p>
+        {% endfor %}<br>
+
+        <button type="submit" class="button secondary">Submit</button>
+    </form>
+</main>

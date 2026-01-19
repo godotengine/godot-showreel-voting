@@ -6,8 +6,8 @@ from werkzeug.exceptions import NotFound
 from flask import Blueprint, Response, current_app, g, redirect, render_template, request, url_for
 
 from gdshowreelvote import auth
-from gdshowreelvote.blueprints.forms import VOTE_ACTIONS, CastVoteForm, SelectVideoForm
-from gdshowreelvote.database import DB, User, Video, Vote
+from gdshowreelvote.blueprints.forms import VOTE_ACTIONS, CastVoteForm, SelectVideoForm, VideoSubmissionForm
+from gdshowreelvote.database import DB, Showreel, ShowreelStatus, User, Video, Vote
 from gdshowreelvote.utils import choose_random_video, get_total_votes, video_data, vote_data, voting_possible
 
 
@@ -188,3 +188,46 @@ def video_view(video_id: int):
 	data = video_data(video)
 	content = render_template('video-view.html', data=data)
 	return render_template('default.html', content = content, user=g.user, hide_nav=True)
+
+
+@bp.route('/submit', methods=['GET'])
+def submit():
+	active_showreel = DB.session.query(Showreel).filter(Showreel.status == ShowreelStatus.OPENED_TO_SUBMISSIONS).count()
+	if not active_showreel == 1:
+		current_app.logger.warning("No active showreel or multiple active showreels found.")
+		error_template = render_template('error.html', title="Submissions Closed", message="Submissions are currently closed.")
+		return render_template('default.html', content = error_template, user=g.user)
+
+	form = VideoSubmissionForm()
+	content = render_template('submit.html', user=g.user, form=form)
+	return render_template('default.html', content = content, user=g.user)
+
+
+@bp.route('/submit', methods=['POST'])
+@auth.login_required
+def post_submit():
+	form = VideoSubmissionForm()
+	if not form.validate():
+		return render_template('submit.html', user=g.user, form=form)
+	
+	active_showreel = DB.session.query(Showreel).filter(Showreel.status == ShowreelStatus.OPENED_TO_SUBMISSIONS).all()
+	if not active_showreel or len(active_showreel) > 1:
+		current_app.logger.warning("No active showreel or multiple active showreels found.")
+		return render_template('error.html', title="Submissions Closed", message="Submissions are currently closed.")
+	
+	active_showreel = active_showreel[0]
+	new_video = Video(
+		game=form.game.data,
+		author_name=form.author_name.data,
+		contact_email=form.contact_email.data,
+		video_link=form.video_link.data,
+		video_download_link=form.video_download_link.data,
+		follow_me_link=form.follow_me_link.data,
+		store_link=form.store_link.data,
+		author=g.user,
+		showreel=active_showreel
+		)
+	DB.session.add(new_video)
+	DB.session.commit()
+
+	return render_template('home.html', user=g.user, submission_success=True)  # TODO: Add flag to show submission success message
