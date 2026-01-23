@@ -1,8 +1,9 @@
 from urllib.parse import urlparse
 from flask_wtf import FlaskForm
-from wtforms import IntegerField, StringField, ValidationError, EmailField
+from wtforms import IntegerField, SelectField, StringField, ValidationError, EmailField
 from wtforms.validators import InputRequired
 
+from gdshowreelvote.database import ShowreelStatus
 from gdshowreelvote.utils import downvote_video, skip_video, upvote_video
 
 
@@ -42,3 +43,13 @@ class VideoSubmissionForm(FlaskForm):
     video_download_link = StringField('Video Download Link', validators=[InputRequired(), validate_urls])
     follow_me_link = StringField('Follow Me Link', validators=[InputRequired(), validate_urls])
     store_link = StringField('Store Link', validators=[InputRequired(), validate_urls])
+
+
+class ManageShowreelsForm(FlaskForm):
+    showreel_id = SelectField('Showreel', validators=[InputRequired()], choices=[])
+    showreel_status = SelectField('Showreel Status', validators=[InputRequired()], 
+                                  choices=[
+                                      (ShowreelStatus.OPENED_TO_SUBMISSIONS.value, ShowreelStatus.OPENED_TO_SUBMISSIONS.value),
+                                      (ShowreelStatus.VOTE.value, ShowreelStatus.VOTE.value),
+                                      (ShowreelStatus.CLOSED.value, ShowreelStatus.CLOSED.value)
+                                  ])

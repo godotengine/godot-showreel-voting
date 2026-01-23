@@ -24,7 +24,7 @@ migrate = Migrate()
 
 
 class ShowreelStatus(enum.Enum):
-    OPENED_TO_SUBMISSIONS = 'OPEN'
+    OPENED_TO_SUBMISSIONS = 'OPENED_TO_SUBMISSIONS'
     VOTE = 'VOTE'
     CLOSED = 'CLOSED'
 

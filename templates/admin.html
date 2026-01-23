@@ -13,27 +13,39 @@
 	}
 </style>
 <main id="admin">
-<h1 style="margin-bottom: 20px;">Vote results</h1>
-<div>
-	<p>Total votes: <strong>{{ total_votes }}</strong></p>
-	<p>Positive votes: <strong>{{ positive_votes }}</strong></p>
-	<p>Negative votes: <strong>{{ total_votes - positive_votes }}</strong></p>
-</div>
-<br>
-<form action="{{ url_for('votes.download_vote_results') }}" method="get" style="display:inline;">
-	<button type="submit" class="button primary small">Download results .csv</button>
-</form>
-<div>
-	<div class="entries">
-		{% for entry in vote_tally %}
-			<div class="entry panel padded">
-				<h2><a href="{{ url_for('votes.video_view', video_id=entry[0].id) }}">{{ entry[0].game }}</a></h2>
-				<p>Category: <strong>{{ entry[0].showreel.title }}</strong></p>
-				<p>Author: <strong>{{ entry[0].author_name }}</strong></p>
-				<p>Vote sum: <strong>{{ entry[1] }}</strong></p>
-				<p>Votes received: <strong>{{ entry[2] }}</strong></p>
-			</div>
-		{% endfor %}
+	<h1>Manage Shorwreels</h1>
+	<form action="{{ url_for('votes.update_showreel_status') }}" method="post" style="display:inline;">
+		{{ form.csrf_token }}
+
+		{{ form.showreel_id.label }}
+		{{ form.showreel_id() }}
+
+		{{ form.showreel_status.label }}
+		{{ form.showreel_status() }}
+
+		<button type="submit" class="button primary small">Save</button>
+	</form>
+	<h1 style="margin-bottom: 20px;">Vote results</h1>
+	<div>
+		<p>Total votes: <strong>{{ total_votes }}</strong></p>
+		<p>Positive votes: <strong>{{ positive_votes }}</strong></p>
+		<p>Negative votes: <strong>{{ total_votes - positive_votes }}</strong></p>
 	</div>
-</div>
+	<br>
+	<form action="{{ url_for('votes.download_vote_results') }}" method="get" style="display:inline;">
+		<button type="submit" class="button primary small">Download results .csv</button>
+	</form>
+	<div>
+		<div class="entries">
+			{% for entry in vote_tally %}
+				<div class="entry panel padded">
+					<h2><a href="{{ url_for('votes.video_view', video_id=entry[0].id) }}">{{ entry[0].game }}</a></h2>
+					<p>Category: <strong>{{ entry[0].showreel.title }}</strong></p>
+					<p>Author: <strong>{{ entry[0].author_name }}</strong></p>
+					<p>Vote sum: <strong>{{ entry[1] }}</strong></p>
+					<p>Votes received: <strong>{{ entry[2] }}</strong></p>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
 </main>
