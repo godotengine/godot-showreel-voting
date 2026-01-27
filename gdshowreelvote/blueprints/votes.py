@@ -138,7 +138,7 @@ def admin_view():
 
 	total_votes, positive_votes, vote_tally = get_total_votes()
 
-	content = render_template('admin.html', form=form, vote_tally=vote_tally, total_votes=total_votes, positive_votes=positive_votes)
+	content = render_template('admin.html', form=form, vote_tally=vote_tally, total_votes=total_votes, positive_votes=positive_votes, showreels=showreels)
 	if request.args.get('page'):
 		return content
 	return render_template('default.html', content = content, user=g.user)
@@ -272,6 +272,8 @@ def user_submissions():
 	closed_submissions = DB.session.query(Video).filter(Video.author_id == g.user.id).filter(Video.showreel != open_showreel).all()
 	
 	content = render_template('user-submissions.html', user=g.user, open_submissions=open_submissions, closed_submissions=closed_submissions, open_showreel=open_showreel)
+	if request.args.get('update'):
+		return content
 	return render_template('default.html', content = content, user=g.user)
 
 
@@ -333,4 +335,4 @@ def update_submission(video_id: int):
 	video.store_link = form.store_link.data
 	DB.session.commit()
 
-	return redirect(url_for('votes.user_submissions'))
+	return redirect(url_for('votes.user_submissions', update='1'))
