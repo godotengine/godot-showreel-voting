@@ -26,14 +26,16 @@
         {% endfor %}<br>
 
         {{ form.video_link.label }}<br>
-        {{ form.video_link(size=100) }}<br>
+        {{ form.video_link(size=100) }}
+        <button type="button" class="button secondary" id="preview-btn">Preview</button><br>
         {% for error in form.video_link.errors %}
             <p class="error">{{ error }}</p>
-        {% endfor %}<br>
+        {% endfor %}
         
         <div id="preview-container" style="display: none;">
             <iframe width="560" height="315" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
         </div>
+        <br>
         
         {{ form.video_download_link.label }}<br>
         {{ form.video_download_link(size=100) }}<br>
@@ -55,7 +57,7 @@
 
         <button type="submit" class="button secondary">Submit</button>
     </form>
-    <button class="button secondary" id="preview-btn">Preview</button>
+    
 </main>
 
 <script>

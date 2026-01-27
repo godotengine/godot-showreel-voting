@@ -1,7 +1,4 @@
-from urllib.parse import parse_qs, urlparse
-from werkzeug.exceptions import NotFound
-
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 from sqlalchemy import and_, func
 from gdshowreelvote.database import DB, Showreel, ShowreelStatus, User, Video, Vote
 

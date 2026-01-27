@@ -4,7 +4,7 @@ from typing import List, Optional
 from urllib.parse import parse_qs, urlparse
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Boolean, Column, DateTime, Enum, ForeignKey, Integer, MetaData, String, Table
+from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, Integer, MetaData, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
