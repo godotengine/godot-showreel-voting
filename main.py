@@ -61,6 +61,17 @@ def create_app(config=None):
     # Commands
     # ------------------------------------------------
 
+    @app.cli.command('create-showreel')
+    @click.argument("name")
+    def create_showreel(name):
+        if not name:
+            print('Showreel name is required.')
+            return
+        showreel = Showreel(status=ShowreelStatus.CLOSED, title=name)
+        DB.session.add(showreel)
+        DB.session.commit()
+        print(f'Created showreel: {name} (ID: {showreel.id})')
+
     @app.cli.command('create-sample-data')
     def create_sample_data():
         if current_app.config['ENV'] != 'dev':
