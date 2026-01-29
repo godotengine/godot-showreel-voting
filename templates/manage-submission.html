@@ -26,10 +26,16 @@
         {% endfor %}<br>
 
         {{ form.video_link.label }}<br>
-        {{ form.video_link(size=100) }}<br>
+        {{ form.video_link(size=100) }}
+        <button type="button" class="button secondary" id="preview-btn">Preview</button><br>
         {% for error in form.video_link.errors %}
             <p class="error">{{ error }}</p>
-        {% endfor %}<br>
+        {% endfor %}
+
+        <div id="preview-container" style="display: none;">
+            <iframe width="560" height="315" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+        <br>
 
         {{ form.video_download_link.label }}<br>
         {{ form.video_download_link(size=100) }}<br>
@@ -52,3 +58,44 @@
         <button type="submit" class="button secondary">Update</button>
     </form>
 </main>
+
+<script>
+    // Render video preview
+    function parseVideoID(videoLink) {
+        const videoUrl = new URL(videoLink);
+        console.log(videoUrl.hostname);
+        const hostname = videoUrl.hostname
+        if (hostname == 'youtu.be') {
+            return videoUrl.pathname.slice(1);
+        }
+        else if (hostname === 'www.youtube.com' || hostname === 'youtube.com' || hostname === 'm.youtube.com') {
+            if (videoUrl.pathname == '/watch') {
+                return videoUrl.searchParams.get('v');
+            }
+            else if (videoUrl.pathname.startsWith('/embed/')) {
+                return videoUrl.pathname.split('/')[2];
+            }
+            else if (videoUrl.pathname.startsWith('/v/')) {
+                return videoUrl.pathname.split('/')[2];
+            }
+        }
+        return null;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('preview-btn').addEventListener('click', function() {
+            const originalForm = document.querySelector("#submission-form form");
+            const previewContainer = document.getElementById('preview-container');
+            let videoID = parseVideoID(originalForm.querySelector("input[name='video_link']").value);
+            if (!videoID) {
+                previewContainer.innerHTML = '<p class="error">Invalid video link provided.</p>';
+                previewContainer.style.display = 'block';
+                return;
+            }
+            videoID = 'https://www.youtube.com/embed/' + videoID + '?rel=0&autoplay=1';
+            
+            previewContainer.querySelector('iframe').src = videoID;
+            previewContainer.style.display = 'block';
+        });
+    })
+</script>
