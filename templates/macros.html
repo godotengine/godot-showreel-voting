@@ -16,6 +16,9 @@
 					</a>
 					<div id="dropdown-menu" class="dropdown-content">
 						<a href="/about">About</a>
+						{% if user %}
+							<a href="/user/submissions">Submissions</a>
+						{% endif %}
 						{% if user.can_vote() %}
 							<a href="/vote">Vote</a>
 							<a href="/history">History</a>

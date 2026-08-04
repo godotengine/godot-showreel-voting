@@ -1,0 +1,89 @@
+<style>
+	.entry {
+		.info {
+			display: grid;
+			margin-bottom: 5px;
+			gap: 10px;
+			@media (min-width: 768px) {
+				grid-template-columns: 120px 1fr;
+
+			}
+			.category {
+				font-size: 12px;
+				margin: 4px 0px;
+			}
+		}
+		.image-container {
+			border-radius: 6px;
+  		overflow: hidden;
+			img {
+				max-width: 100%;
+				margin-bottom: -15px;
+  			margin-top: -11px;
+				width: auto;
+  			aspect-ratio: 16/9;
+			}
+		}
+	}
+</style>
+
+<main id="user-submissions">
+    <h1>User Submissions</h1>
+    <hr>
+    {% if open_submissions %}
+        <h2>Open Submissions</h2>
+        <div>
+            {% for entry in open_submissions %}
+                <div class="entry panel padded">
+					<div class="info">
+						<div>
+							<div class="image-container">
+								<img src="https://img.youtube.com/vi/{{ entry.parse_youtube_video_id() }}/default.jpg" alt="Video thumbnail" loading="lazy">
+							</div>
+						</div>
+						<div>
+							<h2>{{ entry.game }}</h2>
+							<p><strong>{{ entry.author_name }}</strong></p>
+							<p class="category">{{ entry.showreel.title }}</p>			
+						</div>
+					</div>
+                    <div>
+                        <a href="{{url_for('votes.manage_submission', video_id=entry.id) }}" style="text-decoration: none;">
+                            <form action="{{ url_for('votes.manage_submission', video_id=entry.id) }}" method="get" style="display:inline-block; margin-top: 10px;">
+                                <button type="submit" class="button secondary">Edit entry</button>
+                            </form>
+                        </a>
+                        <form action="{{ url_for('votes.delete_submission', video_id=entry.id) }}" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this entry?');">
+                            <button type="submit" class="button tertiary">Delete entry</button>
+                        </form>
+                    </div>	
+				</div>
+            {% endfor %}
+        </div>
+        <hr>
+    {% endif %}
+    {% if closed_submissions %}
+        <h2>Closed Submissions</h2>
+        <div>
+            {% for entry in closed_submissions %}
+                <div class="entry panel padded">
+					<div class="info">
+						<div>
+							<div class="image-container">
+								<img src="https://img.youtube.com/vi/{{ entry.parse_youtube_video_id() }}/default.jpg" alt="Video thumbnail" loading="lazy">
+							</div>
+						</div>
+						<div>
+							<h2>{{ entry.game }}</h2>
+							<p><strong>{{ entry.author_name }}</strong></p>
+							<p class="category">{{ entry.showreel.title }}</p>			
+						</div>
+					</div>
+				</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% if not open_submissions and not closed_submissions %}
+        <p>You haven't submitted any entries yet.</p>
+    {% endif %}
+</main>
