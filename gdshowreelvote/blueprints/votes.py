@@ -26,6 +26,7 @@ from gdshowreelvote.blueprints.forms import (
 from gdshowreelvote.database import DB, Showreel, ShowreelStatus, User, Video, Vote
 from gdshowreelvote.utils import (
 	choose_random_video,
+	extract_steam_app_id,
 	get_total_votes_for_showreel,
 	video_data,
 	vote_data,
@@ -195,7 +196,7 @@ def download_vote_results():
 
 	csv_file = StringIO()
 	writer = csv.writer(csv_file)
-	writer.writerow(['Author', 'Follow-me link', 'Game', 'Video link', 'Download link', 'Contact email', 'Store Link', 'Positive votes', 'Negative votes', 'staff', 'fund_member'])
+	writer.writerow(['Author', 'Follow-me link', 'Game', 'Video link', 'Download link', 'Contact email', 'Store Link', 'Steam App ID', 'Positive votes', 'Negative votes', 'staff', 'fund_member'])
 
 	for video, plus_votes, minus_votes, staff_votes, fund_member_votes in result:
 		writer.writerow([
@@ -206,6 +207,7 @@ def download_vote_results():
             video.video_download_link,
             video.contact_email,
             video.store_link,
+			extract_steam_app_id(video.store_link),
             plus_votes,
             minus_votes,
 			staff_votes,

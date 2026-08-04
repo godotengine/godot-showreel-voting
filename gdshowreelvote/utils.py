@@ -1,4 +1,5 @@
 from typing import Any, Dict, List, Tuple
+from urllib.parse import urlparse
 from sqlalchemy import and_, func
 from gdshowreelvote.database import DB, Showreel, ShowreelStatus, User, Video, Vote
 
@@ -133,3 +134,20 @@ def get_total_votes_for_showreel(showreel: Showreel|None) -> Dict[str, Any]:
 
 def voting_possible() -> bool:
     return DB.session.query(Showreel).where(Showreel.status==ShowreelStatus.VOTE).count() > 0
+
+
+def extract_steam_app_id(url: str) -> str:
+    """ Extract the Steam App ID from a given URL. """
+    if not url:
+        return ""
+    parsed = urlparse(url)
+
+    if parsed.netloc != 'store.steampowered.com':
+        return ""
+    path_parts = parsed.path.strip('/').split('/')
+    if len(path_parts) < 2 or path_parts[0] != 'app':
+        return ""
+    app_id = path_parts[1]
+    if not app_id.isdigit():
+        return ""
+    return app_id
