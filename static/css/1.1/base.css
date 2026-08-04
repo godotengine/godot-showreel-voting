@@ -241,3 +241,7 @@ textarea {
 p.error {
 	color: #f65994;
 }
+
+p.info {
+	opacity: 0.6;
+}

@@ -49,7 +49,8 @@
             <p class="error">{{ error }}</p>
         {% endfor %}<br>
 
-        {{ form.store_link.label }}<br>
+        {{ form.store_link.label }}
+        <p class="info">We will use this to promote your game in future events and showcase pages.</p>
         {{ form.store_link(size=100) }}<br>
         {% for error in form.store_link.errors %}
             <p class="error">{{ error }}</p>
