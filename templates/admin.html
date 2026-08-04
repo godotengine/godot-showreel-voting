@@ -32,28 +32,13 @@
 
 		<button type="submit" class="button primary small">Save</button>
 	</form>
+
 	<h1 style="margin-bottom: 20px;">Vote results</h1>
-	<div>
-		<p>Total votes: <strong>{{ total_votes }}</strong></p>
-		<p>Positive votes: <strong>{{ positive_votes }}</strong></p>
-		<p>Negative votes: <strong>{{ total_votes - positive_votes }}</strong></p>
-	</div>
-	<br>
 	<form action="{{ url_for('votes.download_vote_results') }}" method="get" style="display:inline;">
+		<input type="hidden" id="download-showreel-id" name="showreel_id" value="">
 		<button type="submit" class="button primary small">Download results .csv</button>
 	</form>
-	<div>
-		<div class="entries">
-			{% for entry in vote_tally %}
-				<div class="entry panel padded">
-					<h2><a href="{{ url_for('votes.video_view', video_id=entry[0].id) }}">{{ entry[0].game }}</a></h2>
-					<p>Category: <strong>{{ entry[0].showreel.title }}</strong></p>
-					<p>Author: <strong>{{ entry[0].author_name }}</strong></p>
-					<p>Vote sum: <strong>{{ entry[1] }}</strong></p>
-					<p>Votes received: <strong>{{ entry[2] }}</strong></p>
-				</div>
-			{% endfor %}
-		</div>
+	<div id="vote-results">
 	</div>
 </main>
 
@@ -61,6 +46,8 @@
 	document.addEventListener('DOMContentLoaded', function () {
 		const showreelSelect = document.getElementById('showreel_id');
 		const statusSelect = document.getElementById('showreel_status');
+		const voteResults = document.getElementById('vote-results');
+		const downloadShowreelId = document.getElementById('download-showreel-id');
 
 		function updateStatus() {
 			const selectedOption = showreelSelect.options[showreelSelect.selectedIndex];
@@ -69,10 +56,25 @@
 			if (!status) return;
 
 			statusSelect.value = status;
+			downloadShowreelId.value = showreelSelect.value;
 		}
 
-		showreelSelect.addEventListener('change', updateStatus);
+		function updateResults() {
+			const showreelId = showreelSelect.value;
+
+			fetch(`/showreel-results?showreel_id=${showreelId}`)
+				.then(response => response.text())
+				.then(html => {
+					voteResults.innerHTML = html;
+				});
+		}
+
+		showreelSelect.addEventListener('change', function () {
+			updateStatus();
+			updateResults();
+		});
 
 		updateStatus();
+		updateResults();
 	});
 </script>

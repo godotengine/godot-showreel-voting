@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import IntegerField, SelectField, StringField, ValidationError, EmailField
 from wtforms.validators import InputRequired
 
-from gdshowreelvote.database import ShowreelStatus
+from gdshowreelvote.database import DB, Showreel, ShowreelStatus
 from gdshowreelvote.utils import downvote_video, skip_video, upvote_video
 
 
@@ -53,3 +53,19 @@ class ManageShowreelsForm(FlaskForm):
                                       (ShowreelStatus.VOTE.value, ShowreelStatus.VOTE.value),
                                       (ShowreelStatus.CLOSED.value, ShowreelStatus.CLOSED.value)
                                   ])
+
+    def validate(self, extra_validators = None):
+        if not super().validate(extra_validators):
+            return False
+
+        submissions = DB.session.query(Showreel).filter(Showreel.status == ShowreelStatus.OPENED_TO_SUBMISSIONS).first()
+        if submissions and self.showreel_status.data == ShowreelStatus.OPENED_TO_SUBMISSIONS.value:
+            self.showreel_status.errors.append("There is already a showreel open for submissions.")
+            return False
+
+        vote = DB.session.query(Showreel).filter(Showreel.status == ShowreelStatus.VOTE).first()
+        if vote and self.showreel_status.data == ShowreelStatus.VOTE.value:
+            self.showreel_status.errors.append("There is already a showreel open for voting.")
+            return False
+
+        return True

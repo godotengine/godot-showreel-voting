@@ -1,24 +1,45 @@
 import csv
 from io import StringIO
-from sqlalchemy import case, func
+
+from flask import (
+	Blueprint,
+	Response,
+	current_app,
+	g,
+	redirect,
+	render_template,
+	request,
+	url_for,
+)
+from sqlalchemy import case, func, or_
+from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import NotFound
 
-from flask import Blueprint, Response, current_app, g, redirect, render_template, request, url_for
-
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy import or_
 from gdshowreelvote import auth
-from gdshowreelvote.blueprints.forms import VOTE_ACTIONS, CastVoteForm, ManageShowreelsForm, SelectVideoForm, VideoSubmissionForm
+from gdshowreelvote.blueprints.forms import (
+	VOTE_ACTIONS,
+	CastVoteForm,
+	ManageShowreelsForm,
+	SelectVideoForm,
+	VideoSubmissionForm,
+)
 from gdshowreelvote.database import DB, Showreel, ShowreelStatus, User, Video, Vote
-from gdshowreelvote.utils import choose_random_video, get_total_votes, video_data, vote_data, voting_possible
-
+from gdshowreelvote.utils import (
+	choose_random_video,
+	get_total_votes_for_showreel,
+	video_data,
+	vote_data,
+	voting_possible,
+)
 
 bp = Blueprint('votes', __name__)
 
 
 @bp.route('/')
 def home():
-	content = render_template('home.html', user=g.user)
+	active_submissions = DB.session.query(Showreel).filter(Showreel.status == ShowreelStatus.OPENED_TO_SUBMISSIONS).first()
+	active_vote = DB.session.query(Showreel).filter(Showreel.status == ShowreelStatus.VOTE).first()
+	content = render_template('home.html', user=g.user, active_submissions=active_submissions, active_vote=active_vote)
 	return render_template('default.html', content = content, user=g.user)
 
 
@@ -101,13 +122,13 @@ def history():
 		return redirect(url_for('votes.home'))
 	limit = request.args.get('limit')
 	page = int(request.args.get('page', 1))
-	total_video_count = DB.session.query(Video).count()
-	total_user_votes = DB.session.query(Vote).filter(Vote.user_id == g.user.id).count()
+	total_video_count = DB.session.query(Video).join(Showreel).filter(Showreel.status == ShowreelStatus.VOTE).count()
+	total_user_votes = DB.session.query(Vote).join(Video).join(Showreel).filter(Showreel.status == ShowreelStatus.VOTE).filter(Vote.user_id == g.user.id).count()
 	progress = {
 		'total': total_video_count,
 		'current': total_user_votes,
 	}
-	query = DB.session.query(Vote).filter(Vote.user_id == g.user.id).order_by(Vote.created_at.desc())
+	query = DB.session.query(Vote).join(Video).join(Showreel).filter(Showreel.status == ShowreelStatus.VOTE).filter(Vote.user_id == g.user.id).order_by(Vote.created_at.desc())
 
 	if limit == 'all':
 		total_results = query.count()
@@ -133,12 +154,18 @@ def history():
 @auth.admin_required
 def admin_view():
 	form = ManageShowreelsForm()
-	showreels = DB.session.query(Showreel).all()
+	showreels = (
+		DB.session.query(Showreel)
+		.order_by(
+			case(
+				(Showreel.status == ShowreelStatus.VOTE, 0),
+				(Showreel.status == ShowreelStatus.OPENED_TO_SUBMISSIONS, 1),
+				else_=2))
+		.all()
+	)
 	form.showreel_id.choices = [(showreel.id, showreel.title) for showreel in showreels]
 
-	total_votes, positive_votes, vote_tally = get_total_votes()
-
-	content = render_template('admin.html', form=form, vote_tally=vote_tally, total_votes=total_votes, positive_votes=positive_votes, showreels=showreels)
+	content = render_template('admin.html', form=form, showreels=showreels)
 	if request.args.get('page'):
 		return content
 	return render_template('default.html', content = content, user=g.user)
@@ -147,6 +174,10 @@ def admin_view():
 @bp.route('/results')
 @auth.admin_required
 def download_vote_results():
+	showreel_id = request.args.get("showreel_id", type=int)
+	showreel = DB.session.get(Showreel, showreel_id)
+	if showreel is None:
+		return render_template('error.html', title="Showreel Not Found", message="No showreel ID provided.")
 	result = (
         DB.session.query(
             Video,
@@ -157,6 +188,7 @@ def download_vote_results():
 		)
         .outerjoin(Vote, Vote.video_id == Video.id)
 		.outerjoin(User, User.id == Vote.user_id)
+		.filter(Video.showreel_id == showreel_id)
         .group_by(Video.id)
         .order_by(func.coalesce(func.sum(Vote.rating), 0).desc()).all()
     )
@@ -180,7 +212,7 @@ def download_vote_results():
 			fund_member_votes
         ])
 	response = Response(csv_file.getvalue(), mimetype='text/csv')
-	response.headers["Content-Disposition"] = "attachment; filename=vote_results.csv"
+	response.headers["Content-Disposition"] = f"attachment; filename=vote_results_{showreel.title}.csv"
 	return response
 
 
@@ -199,7 +231,7 @@ def video_view(video_id: int):
 @bp.route('/submit', methods=['GET'])
 def submit():
 	active_showreel = DB.session.query(Showreel).filter(Showreel.status == ShowreelStatus.OPENED_TO_SUBMISSIONS).count()
-	if not active_showreel == 1:
+	if active_showreel != 1:
 		current_app.logger.warning("No active showreel or multiple active showreels found.")
 		error_template = render_template('error.html', title="Submissions Closed", message="Submissions are currently closed.")
 		return render_template('default.html', content = error_template, user=g.user)
@@ -222,7 +254,7 @@ def post_submit():
 		return render_template('error.html', title="Submissions Closed", message="Submissions are currently closed.")
 	duplicate_video = DB.session.query(Video).filter(or_(Video.video_link == form.video_link.data, Video.video_download_link == form.video_download_link.data)).first()
 	if duplicate_video:
-		form.errors.setdefault('video_link', []).append('A video with the same link or download link has already been submitted.')
+		form.video_link.errors.append('A video with the same link or download link has already been submitted.')
 		return render_template('submit.html', user=g.user, form=form)
 
 	active_showreel = active_showreel[0]
@@ -244,7 +276,7 @@ def post_submit():
 		current_app.logger.error(f"Database integrity error while submitting video: {e}")
 		DB.session.rollback()
 		return render_template('submit.html', user=g.user, form=form)
-	return render_template('home.html', user=g.user, submission_success=True)  # TODO: Add flag to show submission success message
+	return render_template('home.html', user=g.user, active_submissions=True, submission_success=True)  # TODO: Add flag to show submission success message
 
 
 @bp.route('/showreel/update-status', methods=['POST'])
@@ -336,3 +368,17 @@ def update_submission(video_id: int):
 	DB.session.commit()
 
 	return redirect(url_for('votes.user_submissions', update='1'))
+
+
+@bp.route("/showreel-results")
+@auth.admin_required
+def showreel_results():
+	showreel_id = request.args.get("showreel_id", type=int)
+
+	showreel = DB.session.get(Showreel, showreel_id)
+	if not showreel:
+		return render_template('error.html', title="Showreel Not Found", message="The requested showreel was not found.")
+
+	vote_metrics = get_total_votes_for_showreel(showreel)
+
+	return render_template("partials/vote-results.html", metrics=vote_metrics, showreel=showreel)

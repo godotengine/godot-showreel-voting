@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Tuple
 from sqlalchemy import and_, func
 from gdshowreelvote.database import DB, Showreel, ShowreelStatus, User, Video, Vote
 
@@ -85,8 +85,8 @@ def video_data(video: Video) -> Dict:
 
 
 def vote_data(user: User, video: Video) -> Tuple[Dict, Dict]:
-    total_video_count = DB.session.query(Video).count()
-    total_user_votes = DB.session.query(Vote).filter(Vote.user_id == user.id).count()
+    total_video_count = DB.session.query(Video).join(Showreel).filter(Showreel.status == ShowreelStatus.VOTE).count()
+    total_user_votes = DB.session.query(Vote).join(Video).join(Showreel).filter(Showreel.status == ShowreelStatus.VOTE).filter(Vote.user_id == user.id).count()
 
     data = video_data(video) if video else None
 
@@ -98,9 +98,11 @@ def vote_data(user: User, video: Video) -> Tuple[Dict, Dict]:
     return data, progress
 
 
-def get_total_votes() -> Tuple[int, int, List[Tuple[Video, int, int]]]:
-    total_votes = DB.session.query(func.count(Vote.id)).filter(Vote.rating != 0).scalar()
-    positive_votes = DB.session.query(func.count(Vote.id)).filter(Vote.rating == 1).scalar()
+def get_total_votes_for_showreel(showreel: Showreel|None) -> Dict[str, Any]:
+    selected_showreel = showreel if showreel else DB.session.query(Showreel).first()
+    output = {}
+    output['total_votes'] = DB.session.query(func.count(Vote.id)).join(Video).filter(Video.showreel == selected_showreel).filter(Vote.rating != 0).scalar()
+    output['positive_votes'] = DB.session.query(func.count(Vote.id)).join(Video).filter(Video.showreel == selected_showreel).filter(Vote.rating == 1).scalar()
     results = (
         DB.session.query(
             Video,
@@ -108,12 +110,25 @@ def get_total_votes() -> Tuple[int, int, List[Tuple[Video, int, int]]]:
             func.count(Vote.id).label("vote_count"),
         )
         .outerjoin(Vote, Vote.video_id == Video.id)
+        .filter(Video.showreel == selected_showreel)
         .group_by(Video.id)
         .order_by(func.coalesce(func.sum(Vote.rating), 0).desc())
         .all()
     )
+    output['results'] = []
+    for video, vote_sum, vote_count in results:
+        output['results'].append(
+            {
+                "id": video.id,
+                "game": video.game,
+                "author_name": video.author_name,
+                "video_link": video.video_link,
+                "vote_sum": vote_sum,
+                "vote_count": vote_count,
+            }
+        )
 
-    return total_votes, positive_votes, results
+    return output
 
 
 def voting_possible() -> bool:

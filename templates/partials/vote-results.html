@@ -1,0 +1,28 @@
+{% if metrics.total_votes == 0 %}
+    <p>No voting data available for this showreel yet.</p>
+{% else %}
+    <div>
+        <p>Total votes: <strong>{{ metrics.total_votes }}</strong></p>
+        <p>Positive votes: <strong>{{ metrics.positive_votes }}</strong></p>
+        <p>Negative votes: <strong>{{ metrics.total_votes - metrics.positive_votes }}</strong></p>
+    </div>
+    
+    <br>
+{% endif %}
+<div>
+    <div class="entries">
+        {% for entry in metrics.results %}
+            <div class="entry panel padded">
+                <h2>
+                    <a href="{{ url_for('votes.video_view', video_id=entry.id) }}">
+                        {{ entry.game }}
+                    </a>
+                </h2>
+                <p>Category: <strong>{{ showreel.title }}</strong></p>
+                <p>Author: <strong>{{ entry.author_name }}</strong></p>
+                <p>Vote sum: <strong>{{ entry.vote_sum }}</strong></p>
+                <p>Votes received: <strong>{{ entry.vote_count }}</strong></p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
