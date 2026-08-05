@@ -34,7 +34,7 @@ class User(DB.Model):
 
     id: Mapped[str] = mapped_column(String(KEYCLOAK_ID_SIZE), primary_key=True, autoincrement=False)
     email: Mapped[str] = mapped_column(String(128), unique=True, nullable=False)
-    username: Mapped[str] = mapped_column(String(150), unique=True, nullable=True)
+    username: Mapped[str] = mapped_column(String(150), unique=False, nullable=True)
 
     is_staff: Mapped[bool] = mapped_column(Boolean, default=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
