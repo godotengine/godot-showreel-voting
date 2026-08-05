@@ -1,6 +1,5 @@
-from datetime import datetime, timedelta
 from functools import wraps
-from typing import Dict, List
+from typing import Dict
 from flask import Flask, current_app, render_template, request, url_for, session
 from flask import redirect
 from authlib.integrations.flask_client import OAuth

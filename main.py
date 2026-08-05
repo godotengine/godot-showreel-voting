@@ -43,7 +43,8 @@ def create_app(config=None):
         if oidc_info:
             g.user = DB.session.get(User, oidc_info['sub'])
             # Calculate Gravatar hash
-            g.user.gravatar_hash = hashlib.md5(g.user.email.encode('utf-8')).hexdigest()
+            if g.user:
+                g.user.gravatar_hash = hashlib.md5(g.user.email.encode('utf-8')).hexdigest()
         else:
             g.user = None
 
