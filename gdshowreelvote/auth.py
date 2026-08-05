@@ -121,11 +121,14 @@ def oidc_auth():
 
 
 def update_or_create_user(oidc_info: Dict):
+    current_app.logger.info(f"Updating or creating user: {oidc_info['sub']}")
     if user := DB.session.get(User, oidc_info['sub']):
+        current_app.logger.info(f"User exists, updating: {user.username}")
         user.is_staff = STAFF_ROLE in oidc_info.get('roles', [])
         user.is_superuser = ADMIN_ROLE in oidc_info.get('roles', [])
         user.is_fund_member = _fund_member_can_vote(oidc_info)
     else:
+        current_app.logger.info(f"User does not exist, creating: {oidc_info['sub']}")
         user = User(
             id=oidc_info['sub'],
             username=oidc_info.get('name', oidc_info.get('preferred_username', '')),
