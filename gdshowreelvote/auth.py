@@ -3,6 +3,7 @@ from typing import Dict
 from flask import Flask, current_app, render_template, request, url_for, session
 from flask import redirect
 from authlib.integrations.flask_client import OAuth
+from sqlalchemy.exc import IntegrityError
 
 from gdshowreelvote.database import User, DB
 
@@ -134,7 +135,12 @@ def update_or_create_user(oidc_info: Dict):
             is_fund_member = _fund_member_can_vote(oidc_info)
         )
         DB.session.add(user)
-    DB.session.commit()
+    try:
+        DB.session.commit()
+    except IntegrityError as e:
+        DB.session.rollback()
+        current_app.logger.error(f"Error updating or creating user: {e}")
+        return
 
 
 def oidc_logout():
