@@ -136,11 +136,24 @@
 					<h2>Submission info:</h2>
 					<div class="col-2">
 						<p class="truncate" title="{{ data.game }}">Project: <strong>{{ data.game }}</strong></p>
-						<p>Video Link: <a href="{{ data.video_link }}" target="_blank">{{ data.video_link }}</a></p>
 						<p>Author: <strong>{{ data.author }}</strong></p>
-						<p>Store Link: <a href="{{ data.store_link }}" target="_blank">{{ data.store_link }}</a></p>
 						<p>Category: <strong>{{ data.category }}</strong></p>
+						
+						<p>Video Link: <a href="{{ data.video_link }}" target="_blank">{{ data.video_link }}</a></p>
 						<p>Follow them: <a href="{{ data.follow_me_link }}" target="_blank">{{ data.follow_me_link }}</a></p>
+						<div>
+							<p>Store Links</p>
+							{% set store_links = data.store_link.split(';') %}
+							<ul>
+							{% for link in store_links %}
+								{% if link %}
+									<li>
+										<a href="{{ link }}" target="_blank">{{ link }}</a>
+									</li>
+								{% endif %}
+							{% endfor %}
+							</ul>
+						</div>
 					</div>
 				</div>
 			</div>

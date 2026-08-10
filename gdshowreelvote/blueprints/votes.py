@@ -206,7 +206,7 @@ def download_vote_results():
             video.video_link,
             video.video_download_link,
             video.contact_email,
-            video.store_link,
+            '\n'.join(video.store_link.split(';')),
 			extract_steam_app_id(video.store_link),
             plus_votes,
             minus_votes,
@@ -237,7 +237,6 @@ def submit():
 		current_app.logger.warning("No active showreel or multiple active showreels found.")
 		error_template = render_template('error.html', title="Submissions Closed", message="Submissions are currently closed.")
 		return render_template('default.html', content = error_template, user=g.user)
-
 	form = VideoSubmissionForm()
 	content = render_template('submit.html', user=g.user, form=form)
 	return render_template('default.html', content = content, user=g.user)
@@ -246,7 +245,20 @@ def submit():
 @bp.route('/submit', methods=['POST'])
 @auth.login_required
 def post_submit():
-	form = VideoSubmissionForm()
+	formdata = request.form.copy()
+
+	links = [
+		formdata.get("store_link", "").strip(),
+		formdata.get("store_link_2", "").strip(),
+		formdata.get("store_link_3", "").strip(),
+		formdata.get("store_link_4", "").strip(),
+		formdata.get("store_link_5", "").strip(),
+	]
+
+	formdata["store_link"] = ";".join(link for link in links if link)
+
+	form = VideoSubmissionForm(formdata)
+
 	if not form.validate():
 		return render_template('submit.html', user=g.user, form=form)
 	
@@ -356,7 +368,18 @@ def update_submission(video_id: int):
 	if video.showreel.status != ShowreelStatus.OPENED_TO_SUBMISSIONS:
 		return render_template('error.html', title="Cannot Update Submission", message="Submissions can only be updated while the showreel is open to submissions.")
 
-	form = VideoSubmissionForm()
+	formdata = request.form.copy()
+	
+	links = [
+		formdata.get("store_link", "").strip(),
+		formdata.get("store_link_2", "").strip(),
+		formdata.get("store_link_3", "").strip(),
+		formdata.get("store_link_4", "").strip(),
+		formdata.get("store_link_5", "").strip(),
+	]
+
+	formdata["store_link"] = ";".join(link for link in links if link)
+	form = VideoSubmissionForm(formdata, obj=video)
 	if not form.validate():
 		return render_template('update-submissions.html', user=g.user, submissions=[video], open_showreel=video.showreel, form=form)
 

@@ -26,6 +26,15 @@ def validate_urls(form, field):
             raise ValidationError(f'Invalid URL: {field.data}')
 
 
+def validate_store_urls(form, field):
+    # Form is submitted with format: "url1;url2;url3"
+    if field.data:
+        urls = field.data.split(';')
+        for url in urls:
+            parsed = urlparse(url)
+            if not all([parsed.scheme, parsed.netloc]):
+                raise ValidationError(f'Invalid URL: {url}')
+
 class CastVoteForm(FlaskForm):
     action = StringField('Action', validators=[validate_action])
     video_id = IntegerField('Video ID', validators=[InputRequired()])
@@ -42,7 +51,7 @@ class VideoSubmissionForm(FlaskForm):
     video_link = StringField('Video Link', validators=[InputRequired(), validate_urls])  # TODO: Check specific URL formats
     video_download_link = StringField('Video Download Link', validators=[InputRequired(), validate_urls])
     follow_me_link = StringField('Follow Me Link', validators=[InputRequired(), validate_urls])
-    store_link = StringField('Store Link', validators=[InputRequired(), validate_urls])
+    store_link = StringField('Store Link', validators=[InputRequired(), validate_store_urls])
 
 
 class ManageShowreelsForm(FlaskForm):

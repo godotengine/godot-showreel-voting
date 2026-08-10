@@ -50,7 +50,16 @@
         {% endfor %}<br>
 
         {{ form.store_link.label }}<br>
+        <p class="info">We will use this to promote your game in future events and showcase pages.</p>
         {{ form.store_link(size=100) }}<br>
+        <div id="store-link-extra-container">
+            {% for i in range(2, 6) %}
+                <div class="store-link-extra" id="store-link-{{ i }}-container" style="display: none;">
+                    <label for="store-link-{{ i }}">Additional Store Link {{ i }}</label><br>
+                    <input type="url" id="store-link-{{ i }}" name="store_link_{{ i }}" size="100"><br>
+                </div>
+            {% endfor %}
+        </div>
         {% for error in form.store_link.errors %}
             <p class="error">{{ error }}</p>
         {% endfor %}<br>
@@ -98,4 +107,40 @@
             previewContainer.style.display = 'block';
         });
     })
+</script>
+
+
+<script>
+    // Handle multiple store links
+    const storeLinks = [
+        document.getElementById("store_link"),
+        document.getElementById("store-link-2"),
+        document.getElementById("store-link-3"),
+        document.getElementById("store-link-4"),
+        document.getElementById("store-link-5")
+    ];
+
+    function updateStoreLinkVisibility() {
+        for (let i = 1; i < storeLinks.length; i++) {
+            const container = document.getElementById(`store-link-${i + 1}-container`);
+            container.style.display = storeLinks[i - 1].value.trim() ? "block" : "none";
+        }
+    }
+
+    storeLinks.forEach(link => {
+        link.addEventListener("input", updateStoreLinkVisibility);
+    });
+
+    // populate form fields with existing links
+    document.addEventListener('DOMContentLoaded', function() {
+    
+        const existingLinks = {{ form.store_link.data|tojson }}.split(';');
+        for (let i = 0; i < existingLinks.length && i < storeLinks.length; i++) {
+            storeLinks[i].value = existingLinks[i];
+            const container = document.getElementById(`store-link-${i + 2}-container`);
+            container.style.display = storeLinks[i].value.trim() ? "block" : "none";
+        }
+
+        updateStoreLinkVisibility();
+    });
 </script>
