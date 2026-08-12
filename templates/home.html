@@ -26,9 +26,9 @@
 			{% if user %}
 				{% if submission_success %}
 					<h2>Thank you for your submission!</h2>
-					<p>Your entry has been received, voting will start on <strong>?????</strong> 📅</p>
+					<p>Your entry has been received, voting will start on <strong>October 1st</strong> 📅</p>
 				{% else %}
-					<p>Submit your game for the Godot showreel until <strong>?????</strong> 📅</p>
+					<p>Submit your game for the Godot showreel until <strong>October 1st</strong> 📅</p>
 				{% endif %}
 				<a class="button primary" href="/submit">Submit entry</a>
 			{% else %}
@@ -41,13 +41,14 @@
 			<!-- During the voting period -->
 			{% if user %}
 				{% if user.can_vote() %}
-				<p>Cast your votes until <strong>October 20th</strong> 📅</p>
+				<p>Cast your votes until <strong>October 18th</strong> 📅</p>
 				<ul>
 					<li>Videos are presented in random order, and scores are hidden until the voting period ends</li>
 					<li>Your votes are anonymous</li>
 					<li>You can change your votes until the voting period ends</li>
 					<li>We encourage you to vote for as many entries as you can</li>
 					<li>If you found any issue or if you have a suggestion, please create an issue in our <a href="https://github.com/godotengine/godot-showreel-voting/issues">issue tracker</a></li>
+					<li>Showreel will be published on the first week of November</li>
 				</ul>
 			
 				<p style="margin: 20px 0;">Happy voting!</p>		
