@@ -1,14 +1,14 @@
-{% if metrics.total_votes == 0 %}
-    <p>No voting data available for this showreel yet.</p>
-{% else %}
-    <div>
+<div>
+    <p>Total submissions: <strong>{{ metrics.results | length }}</strong></p>
+    {% if metrics.total_votes == 0 %}
+        <p>No voting data available for this showreel yet.</p>
+    {% else %}
         <p>Total votes: <strong>{{ metrics.total_votes }}</strong></p>
         <p>Positive votes: <strong>{{ metrics.positive_votes }}</strong></p>
         <p>Negative votes: <strong>{{ metrics.total_votes - metrics.positive_votes }}</strong></p>
-    </div>
-    
-    <br>
-{% endif %}
+    {% endif %}
+</div>
+<br>
 <div>
     <div class="entries">
         {% for entry in metrics.results %}
