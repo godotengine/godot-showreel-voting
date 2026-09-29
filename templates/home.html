@@ -35,7 +35,7 @@
 				You need to be logged in to submit an entry:
 				<a href="/login" class="button dim small">Log In</a>
 			{% endif %}
-		</div>	
+		</div>
 	{% elif active_vote %}
 		<div class="panel padded" style="margin-top: 20px;">
 			<!-- During the voting period -->
@@ -76,6 +76,16 @@
 			<h1>Welcome!</h1>
 			<p>The voting period for this years showreel videos has finished.</p>
 			<p style="margin: 20px 0;">Thank you to everyone who participated!</p>
+		</div>
+	{% endif %}
+	
+	{% set has_active_submissions = (active_submissions or active_vote) and current_user_submissions | length > 0 %}
+	{% if has_active_submissions %}
+		<div class="panel padded" style="margin-top: 20px;">
+			<h2><a href="/user/submissions">Your submissions</a></h2>
+			{% with submissions=current_user_submissions %}
+				{% include 'partials/submission.html'%}
+			{% endwith %}
 		</div>
 	{% endif %}
 

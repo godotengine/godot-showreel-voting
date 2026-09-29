@@ -40,7 +40,9 @@ bp = Blueprint('votes', __name__)
 def home():
 	active_submissions = DB.session.query(Showreel).filter(Showreel.status == ShowreelStatus.OPENED_TO_SUBMISSIONS).first()
 	active_vote = DB.session.query(Showreel).filter(Showreel.status == ShowreelStatus.VOTE).first()
-	content = render_template('home.html', user=g.user, active_submissions=active_submissions, active_vote=active_vote)
+
+	open_submissions = DB.session.query(Video).filter(Video.author_id == g.user.id).filter(or_(Video.showreel == active_submissions, Video.showreel == active_vote)).limit(4).all()
+	content = render_template('home.html', user=g.user, active_submissions=active_submissions, active_vote=active_vote, current_user_submissions=open_submissions)
 	return render_template('default.html', content = content, user=g.user)
 
 
