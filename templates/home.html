@@ -35,7 +35,7 @@
 				You need to be logged in to submit an entry:
 				<a href="/login" class="button dim small">Log In</a>
 			{% endif %}
-		</div>	
+		</div>
 	{% elif active_vote %}
 		<div class="panel padded" style="margin-top: 20px;">
 			<!-- During the voting period -->
@@ -76,6 +76,15 @@
 			<h1>Welcome!</h1>
 			<p>The voting period for this years showreel videos has finished.</p>
 			<p style="margin: 20px 0;">Thank you to everyone who participated!</p>
+		</div>
+	{% endif %}
+	
+	
+	{% if user_has_submissions %}
+		<div class="panel padded" style="margin-top: 20px;">
+			<h3>Thank you for your submissions for the showreel!</h3>
+			<br>
+			You can view and manage them in <a href="/user/submissions">your submissions page</a>. Submissions will be locked when the voting starts.
 		</div>
 	{% endif %}
 

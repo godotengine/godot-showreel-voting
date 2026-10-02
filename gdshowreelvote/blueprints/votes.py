@@ -40,7 +40,9 @@ bp = Blueprint('votes', __name__)
 def home():
 	active_submissions = DB.session.query(Showreel).filter(Showreel.status == ShowreelStatus.OPENED_TO_SUBMISSIONS).first()
 	active_vote = DB.session.query(Showreel).filter(Showreel.status == ShowreelStatus.VOTE).first()
-	content = render_template('home.html', user=g.user, active_submissions=active_submissions, active_vote=active_vote)
+
+	user_has_submissions = DB.session.query(Video).filter(Video.author_id == g.user.id).filter(or_(Video.showreel == active_submissions, Video.showreel == active_vote)).first() is not None
+	content = render_template('home.html', user=g.user, active_submissions=active_submissions, active_vote=active_vote, user_has_submissions=user_has_submissions)
 	return render_template('default.html', content = content, user=g.user)
 
 
@@ -314,8 +316,8 @@ def update_showreel_status():
 @auth.login_required
 def user_submissions():
 	open_showreel = DB.session.query(Showreel).filter(Showreel.status == ShowreelStatus.OPENED_TO_SUBMISSIONS).first()
-	open_submissions = DB.session.query(Video).filter(Video.author_id == g.user.id).filter(Video.showreel == open_showreel).all()
-	closed_submissions = DB.session.query(Video).filter(Video.author_id == g.user.id).filter(Video.showreel != open_showreel).all()
+	open_submissions = DB.session.query(Video).filter(Video.author_id == g.user.id).filter(Video.showreel == open_showreel).order_by(Video.showreel_id).all()
+	closed_submissions = DB.session.query(Video).filter(Video.author_id == g.user.id).filter(Video.showreel != open_showreel).order_by(Video.showreel_id).all()
 	
 	content = render_template('user-submissions.html', user=g.user, open_submissions=open_submissions, closed_submissions=closed_submissions, open_showreel=open_showreel)
 	if request.args.get('update'):
