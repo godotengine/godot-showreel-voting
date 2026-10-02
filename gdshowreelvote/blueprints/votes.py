@@ -315,6 +315,8 @@ def update_showreel_status():
 @bp.route('/user/submissions', methods=['GET'])
 @auth.login_required
 def user_submissions():
+	if not g.user:
+		return redirect(url_for('auth.login'))
 	open_showreel = DB.session.query(Showreel).filter(Showreel.status == ShowreelStatus.OPENED_TO_SUBMISSIONS).first()
 	open_submissions = DB.session.query(Video).filter(Video.author_id == g.user.id).filter(Video.showreel == open_showreel).order_by(Video.showreel_id).all()
 	closed_submissions = DB.session.query(Video).filter(Video.author_id == g.user.id).filter(Video.showreel != open_showreel).order_by(Video.showreel_id).all()
