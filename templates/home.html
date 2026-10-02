@@ -79,13 +79,12 @@
 		</div>
 	{% endif %}
 	
-	{% set has_active_submissions = (active_submissions or active_vote) and current_user_submissions | length > 0 %}
-	{% if has_active_submissions %}
+	
+	{% if user_has_submissions %}
 		<div class="panel padded" style="margin-top: 20px;">
-			<h2><a href="/user/submissions">Your submissions</a></h2>
-			{% with submissions=current_user_submissions %}
-				{% include 'partials/submission.html'%}
-			{% endwith %}
+			<h3>Thank you for your submissions for the showreel!</h3>
+			<br>
+			You can view and manage them in <a href="/user/submissions">your submissions page</a>. Submissions will be locked when the voting starts.
 		</div>
 	{% endif %}
 

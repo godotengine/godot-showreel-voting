@@ -245,16 +245,3 @@ p.error {
 p.info {
 	opacity: 0.6;
 }
-
-.entries {
-	margin-top: 20px;
-	display: grid;
-	gap: 20px;
-	@media (min-width: 768px) {
-		grid-template-columns: 1fr 1fr 1fr 1fr;
-	}
-}
-.entry {
-	display: grid;
-	grid-template-columns: 1fr;
-}

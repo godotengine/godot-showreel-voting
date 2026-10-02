@@ -33,7 +33,18 @@
     {% if open_submissions %}
         <h2>Open Submissions</h2>
         <div>
+			{% set ns = namespace(current_open_showreel="") %}
+			{% if open_submissions | length > 0 %}
+				{% set ns.current_open_showreel = open_submissions[0].showreel %}
+				<br>
+				<h3>{{ ns.current_open_showreel.title }}</h3>
+			{% endif %}
             {% for entry in open_submissions %}
+				{% if entry.showreel.id != ns.current_open_showreel.id %}
+					{% set ns.current_open_showreel = entry.showreel %}
+					<br>
+					<h3>{{ ns.current_open_showreel.title }}</h3>
+				{% endif %}
                 <div class="entry panel padded">
 					<div class="info">
 						<div>
@@ -65,7 +76,18 @@
     {% if closed_submissions %}
         <h2>Closed Submissions</h2>
         <div>
+			{% set ns = namespace(current_closed_showreel="") %}
+			{% if closed_submissions | length > 0 %}
+				{% set ns.current_closed_showreel = closed_submissions[0].showreel %}
+				<br>
+				<h3>{{ ns.current_closed_showreel.title }}</h3>
+			{% endif %}
             {% for entry in closed_submissions %}
+				{% if entry.showreel.id != ns.current_closed_showreel.id %}
+					{% set ns.current_closed_showreel = entry.showreel %}
+					<br>
+					<h3>{{ ns.current_closed_showreel.title }}</h3>
+				{% endif %}
                 <div class="entry panel padded">
 					<div class="info">
 						<div>
